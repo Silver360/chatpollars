@@ -2163,7 +2163,7 @@ angular.module('ui.router.router').provider('$urlRouter', $UrlRouterProvider);
  * the UI looks like and does at that place.
  *
  * States often have things in common, and the primary way of factoring out these
- * commonalities in this model is via the state hierarchy, i.e. parent/child states aka
+ * commonalities in this models is via the state hierarchy, i.e. parent/child states aka
  * nested states.
  *
  * The `$stateProvider` provides interfaces to declare these states for your app.

@@ -5795,6 +5795,14 @@ button.close {
 @media print {
   .hidden-print {
     display: none !important; } }
+html {
+  height: 100%;
+  width: 100%; }
+  html body {
+    width: 100%;
+    background-color: black;
+    color: white; }
+
 section#login {
   text-align: center;
   margin: 400px auto auto auto;
@@ -5812,14 +5820,6 @@ section#login {
         border-radius: 10px;
         padding-left: 10px;
         color: black; }
-
-html {
-  height: 100%;
-  width: 100%; }
-  html body {
-    width: 100%;
-    background-color: black;
-    color: white; }
 
 section#prelogin {
   text-align: center;
@@ -5849,6 +5849,6 @@ section#prelogin {
         color: black; }
       section#prelogin #confirm .button p {
         font-size: 40px;
-        line-height: 50px; }
+        line-height: 40px; }
 
 /*# sourceMappingURL=style.css.map */

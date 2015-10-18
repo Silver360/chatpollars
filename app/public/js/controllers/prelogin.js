@@ -1,7 +1,7 @@
 
-var myApp = angular.module('dollars', []);
+var app = angular.module('dollars');
 
-myApp.controller('preLogin', ['$scope', '$state', function( $scope, $state ) {
+app.controller('preLogin', ['$scope', '$state', function( $scope, $state ) {
 
     $scope.appInit = function () {
 

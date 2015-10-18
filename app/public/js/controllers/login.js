@@ -1,17 +1,28 @@
 
 
-var myApp = angular.module('dollars', []);
+var app = angular.module('dollars');
 
-myApp.controller('login', ['$scope', '$state', function( $scope, $state ) {
+app.controller('login', ['$scope', '$state', '$http', function( $scope, $state, $http ) {
 
 
-    $scope.appInit = function () {
-        console.log('init');
-
+    $scope.auth = {
+        login: '',
+        password: ''
     };
 
+    $scope.msg = '';
 
-    $scope.appInit();
-
+    $scope.login = function(){
+        $http.post('http://localhost:8080/login', $scope.auth)
+            .success(function (data, status) {
+                if(data == 'access')
+                    $state.go('chat');
+                else
+                    this.msg = data;
+            })
+            .error(function (data) {
+                console.log('ErrorLogin: ' + data);
+            })
+    }
 
 }]);

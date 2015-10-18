@@ -1,0 +1,6 @@
+
+#exclude folders from project
+
+app/node_modules
+app/.sass-cache
+.idea

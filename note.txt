@@ -1,0 +1,17 @@
+
+//Przyk³ady róznych skryptów
+
+db.addUser( { user: "testUser",    pwd: "test",    roles: [ "readWrite", "dbAdmin" ] } )
+
+mongod -dbpath db
+
+//Tworzenie nowej bazy danych
+use newDB
+db.createCollection("newCollection")
+
+//Wyswietlanie kolekcji
+coll = db.getCollection("users")
+coll.find()
+
+//Dodawanie dokumentu do kolejkcji
+coll.insert({ msg: 'Witam', timestamp: '2015-20-21', username: 'Ren' })

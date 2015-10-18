@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node server.js"
   },
   "dependencies": {
     "body-parser": "^1.13.3",
@@ -16,10 +16,15 @@
     "serve-favicon": "~2.3.0"
   },
   "devDependencies": {
+    "bluebird": "^2.10.2",
+    "connect-mongo": "^0.8.2",
+    "crypto": "0.0.3",
+    "express-session": "^1.11.3",
     "grunt-contrib-concat": "^0.5.1",
     "grunt-contrib-cssmin": "^0.14.0",
     "grunt-contrib-sass": "^0.9.2",
     "grunt-contrib-uglify": "^0.9.2",
-    "grunt-contrib-watch": "^0.6.1"
+    "grunt-contrib-watch": "^0.6.1",
+    "mongoose": "^4.1.11"
   }
 }

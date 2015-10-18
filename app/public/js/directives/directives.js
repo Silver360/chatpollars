@@ -1,6 +1,7 @@
 
+var app = angular.module('dollars')
 
-angular.module('dollars').directive('back', function ($state) {
+app.directive('back', function ($state) {
 
     function link(scope, element, attrs) {
 
@@ -23,7 +24,7 @@ angular.module('dollars').directive('back', function ($state) {
 
 });
 
-angular.module('dollars').directive('validate', function () {
+app.directive('validate', function () {
 
     function link(scope, element, attrs) {
 

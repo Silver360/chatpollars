@@ -1,9 +1,7 @@
 
 
 var myApp = angular.module('dollars', [
-    'ui.router',
-    'login',
-    'preLogin'
+    'ui.router'
 ]);
 
 myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
@@ -12,14 +10,20 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
         $stateProvider
             .state('prelogin', {
                 url: '/prelogin',
-                templateUrl: './views/prelogin.html',
+                templateUrl: 'views/prelogin.html',
                 controller: 'preLogin'
             })
             .state('login', {
                 url: '/login',
-                templateUrl: './views/login.html',
+                templateUrl: 'views/login.html',
                 controller: 'login'
+            })
+            .state('chat', {
+                url: '/chat',
+                templateUrl: 'views/chat.html',
+                controller: 'chat'
             });
+
 
         $urlRouterProvider.otherwise('/login')
 
@@ -28,24 +32,65 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
 ]);
 ;
 
-var myApp = angular.module('dollars', []);
+var app = angular.module('dollars');
 
-myApp.controller('login', ['$scope', '$state', function( $scope, $state ) {
-
-
-    $scope.appInit = function () {
-        console.log('init');
-
-    };
+app.controller('chat', ['$scope', '$state', '$http', function( $scope, $state, $http ) {
 
 
-    $scope.appInit();
+    $scope.user = '';
+    $scope.msg = '';
 
+    var mojInterval = $interval(function () {
+
+        getMsg();
+
+    }, 1000);
+
+    $scope.$on('$destroy', function () {
+        $interval.cancel(mojInterval);
+    });
+
+    getMsg = function(){
+        $http.get('http://localhost:8080/msg')
+            .success(function (data, status) {
+                this.msg = data;
+            })
+            .error(function (data) {
+                console.log('ErrorLogin: ' + data);
+            })
+    }
 
 }]);;
-var myApp = angular.module('dollars', []);
 
-myApp.controller('preLogin', ['$scope', '$state', function( $scope, $state ) {
+var app = angular.module('dollars');
+
+app.controller('login', ['$scope', '$state', '$http', function( $scope, $state, $http ) {
+
+
+    $scope.auth = {
+        login: '',
+        password: ''
+    };
+
+    $scope.msg = '';
+
+    $scope.login = function(){
+        $http.post('http://localhost:8080/login', $scope.auth)
+            .success(function (data, status) {
+                if(data == 'access')
+                    $state.go('chat');
+                else
+                    this.msg = data;
+            })
+            .error(function (data) {
+                console.log('ErrorLogin: ' + data);
+            })
+    }
+
+}]);;
+var app = angular.module('dollars');
+
+app.controller('preLogin', ['$scope', '$state', function( $scope, $state ) {
 
     $scope.appInit = function () {
 
@@ -67,8 +112,9 @@ myApp.controller('preLogin', ['$scope', '$state', function( $scope, $state ) {
     $scope.appInit();
 
 }]);;
+var app = angular.module('dollars')
 
-angular.module('dollars').directive('back', function ($state) {
+app.directive('back', function ($state) {
 
     function link(scope, element, attrs) {
 
@@ -91,7 +137,7 @@ angular.module('dollars').directive('back', function ($state) {
 
 });
 
-angular.module('dollars').directive('validate', function () {
+app.directive('validate', function () {
 
     function link(scope, element, attrs) {
 

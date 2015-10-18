@@ -4,11 +4,15 @@
     <form>
         <div class="row">
             <label class="col-sm-5">Login: </label>
-            <div class="col-sm-7 input" ng-model="login"><input></div>
+            <div class="col-sm-7 input"><input ng-model="auth.login" onfocus="true"></div>
         </div>
         <div class="row">
             <label class="col-sm-5">Password: </label>
-            <div class="col-sm-7 input" ng-model="password"><input type="password"></div>
+            <div class="col-sm-7 input"><input type="password" ng-model="auth.password"></div>
+            <div id="msg">{{ msg }}</div>
+        </div>
+        <div id="confirm">
+            <div class="button" ng-click="login()"><p>Login</p></div>
         </div>
     </form>
 
