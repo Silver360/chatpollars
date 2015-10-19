@@ -34,8 +34,9 @@ module.exports = {
     },
     message: function(io){
         io.sockets.on('connection', function(socket){
-            socket.on('send message', function(data){
-                io.sockets.emit('message', data);
+            socket.on('send:message', function(data){
+                io.sockets.emit('new:message', data);
+                console.log('Wiadomosc: ' + data);
             });
         });
     },

@@ -11,7 +11,7 @@
     <div style="margin-top: 200px">
       <p>
         Chat
-        <p ng-bind-html="msg.value"></p>
+        <p>{{ msg.content }}</p>
       </p>
       <input ng-model="msg.own" style="color: black;">
       <input type="button" ng-click="sendMessage()">

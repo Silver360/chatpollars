@@ -2,7 +2,6 @@
 
 var myApp = angular.module('dollars', [
     'ui.router',
-    'ngSanitize'
 ]);
 
 myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
@@ -35,24 +34,26 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
 
 var app = angular.module('dollars');
 
-app.controller('chat', ['$scope', '$state', '$http', function( $scope, $state, $http ) {
+app.controller('chat', ['$scope', '$state', 'socketio', function( $scope, $state, socketio ) {
 
 
     $scope.user = '';
     $scope.msg = {
       own: '',
-      value: ''
+      content: ''
     };
 
-    var socket = io.connect();
+    $scope.message = '';
 
-    socket.on('message', function(data){
-        $scope.msg.value += data + "<br/>";
+
+    socketio.on('new:message', function(data){
+        console.log(data);
+        $scope.msg.content += data + " ";
     });
 
     $scope.sendMessage = function (){
-        socket.emit('send message', this.msg.own);
-        this.msg.own = '';
+        socketio.emit('send:message', this.msg.own);
+        $scope.msg.own = '';
     };
 
 
@@ -159,4 +160,29 @@ app.directive('validate', function () {
         link: link
     }
 
+});;
+var app = angular.module('dollars');
+
+app.factory('socketio', function ($rootScope) {
+    var socket = io.connect('http://localhost:8080');
+    return {
+        on: function (eventName, callback) {
+            socket.on(eventName, function () {
+                var args = arguments;
+                $rootScope.$apply(function () {
+                    callback.apply(socket, args);
+                });
+            });
+        },
+        emit: function (eventName, data, callback) {
+            socket.emit(eventName, data, function () {
+                var args = arguments;
+                $rootScope.$apply(function () {
+                    if (callback) {
+                        callback.apply(socket, args);
+                    }
+                });
+            })
+        }
+    };
 });

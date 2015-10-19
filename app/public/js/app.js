@@ -2,7 +2,6 @@
 
 var myApp = angular.module('dollars', [
     'ui.router',
-    'ngSanitize'
 ]);
 
 myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
