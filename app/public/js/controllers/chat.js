@@ -6,26 +6,21 @@ app.controller('chat', ['$scope', '$state', '$http', function( $scope, $state, $
 
 
     $scope.user = '';
-    $scope.msg = '';
+    $scope.msg = {
+      own: '',
+      value: ''
+    };
 
-    var mojInterval = $interval(function () {
+    var socket = io.connect();
 
-        getMsg();
-
-    }, 1000);
-
-    $scope.$on('$destroy', function () {
-        $interval.cancel(mojInterval);
+    socket.on('message', function(data){
+        $scope.msg.value += data + "<br/>";
     });
 
-    getMsg = function(){
-        $http.get('http://localhost:8080/msg')
-            .success(function (data, status) {
-                this.msg = data;
-            })
-            .error(function (data) {
-                console.log('ErrorLogin: ' + data);
-            })
-    }
+    $scope.sendMessage = function (){
+        socket.emit('send message', this.msg.own);
+        this.msg.own = '';
+    };
+
 
 }]);

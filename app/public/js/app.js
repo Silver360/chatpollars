@@ -1,7 +1,8 @@
 
 
 var myApp = angular.module('dollars', [
-    'ui.router'
+    'ui.router',
+    'ngSanitize'
 ]);
 
 myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
@@ -25,7 +26,7 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
             });
 
 
-        $urlRouterProvider.otherwise('/login')
+        $urlRouterProvider.otherwise('/chat')
 
 
     }

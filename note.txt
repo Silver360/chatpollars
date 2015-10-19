@@ -15,3 +15,7 @@ coll.find()
 
 //Dodawanie dokumentu do kolejkcji
 coll.insert({ msg: 'Witam', timestamp: '2015-20-21', username: 'Ren' })
+
+
+//Wysy³anie na wszystkie sockety oprocz mnie
+socket.boradcast.emit('new message', data);
