@@ -9,11 +9,13 @@
         </li>
     </ul> -->
     <div style="margin-top: 200px">
-      <p>
-        Chat
-        <p>{{ msg.content }}</p>
-      </p>
-      <input ng-model="msg.own" style="color: black;">
-      <input type="button" ng-click="sendMessage()">
+      <div ng-repeat="messages in msg">
+          <p ng-hide="true">{{ messages.id }}</p>
+          <p>Dodal: {{ messages.user }}</p>
+          <p>Wiadomosc: {{ messages.message }}<p>
+          <p>Date: {{ messages.timestamp }}</p>
+      </div>
+      <input ng-model="message" style="color: black;">
+      <input type="button" ng-click="sendMessage(message)">
     </div>
 </section>

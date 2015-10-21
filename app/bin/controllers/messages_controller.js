@@ -4,14 +4,20 @@ var Promise = require('bluebird');
 
 module.exports = {
 
-    getMsg: function(res){
-
-        db.getMsg()
-            .then(function(msg){
-                res.send(msg)
-            })
-            .catch(function(error){
-                console.log(error);
-            });
+    shortId: require('shortid'),
+    messages: {},
+    msg: {},
+    getMessages: function(){
+        return this.messages;
+    },
+    createMsg: function(msg) {
+        this.msg = {
+            id: this.shortId.generate(),
+            user: 'Renio',
+            message: msg,
+            timestamp: new Date()
+        }
+        this.messages[this.msg.id] = this.msg;
+        return this.msg;
     }
 };

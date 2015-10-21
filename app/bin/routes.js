@@ -1,6 +1,4 @@
 
-var msgReq = require('./controllers/users_controller.js');
-var userReq = require('./controllers/messages_controller.js');
 var bodyParser = require('body-parser');
 
 
@@ -9,8 +7,8 @@ module.exports = {
     app: {},
     express: require('express'),
     io: {},
-    msgReq: require('./controllers/users_controller.js'),
-    userReq: require('./controllers/messages_controller.js'),
+    userReq: require('./controllers/users_controller.js'),
+    msgReq: require('./controllers/messages_controller.js'),
     bodyParser: require('body-parser'),
     init: function(app, io){
         this.app = app;
@@ -22,7 +20,8 @@ module.exports = {
 
         this.static(this.app);
         this.login(this.app, this.userReq);
-        this.message(this.io);
+        this.message(this.io, this.msgReq);
+        this.messages(this.io, this.msgReq);
     },
     static: function(app){
         app.use( '/', this.express.static('./public') );
@@ -32,11 +31,17 @@ module.exports = {
             userReq.login(req.body.login, req.body.password, req, res);
         });
     },
-    message: function(io){
+    messages: function(io, msgReq){
+      io.sockets.on('connection', function(socket){
+          socket.on('get:messages', function(data){
+              io.sockets.emit('new:messages', msgReq.getMessages());
+          });
+      });
+    },
+    message: function(io, msgReq){
         io.sockets.on('connection', function(socket){
             socket.on('send:message', function(data){
-                io.sockets.emit('new:message', data);
-                console.log('Wiadomosc: ' + data);
+                io.sockets.emit('new:message', msgReq.createMsg(data));
             });
         });
     },

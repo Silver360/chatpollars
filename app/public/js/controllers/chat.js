@@ -2,27 +2,27 @@
 
 var app = angular.module('dollars');
 
-app.controller('chat', ['$scope', '$state', 'socketio', function( $scope, $state, socketio ) {
+app.controller('chat', ['$scope', '$state', 'socketio', 'ServiceMessages', function( $scope, $state, socketio, ServiceMessages ) {
 
 
     $scope.user = '';
-    $scope.msg = {
-      own: '',
-      content: ''
+    $scope.msg = {};
+
+    var Init = function(){
+
+        ServiceMessages.getMessages();
     };
 
-    $scope.message = '';
+    $scope.sendMessage = function (message){
+        ServiceMessages.sendMessage(message);
+        $scope.message = '';
+    };
 
-
-    socketio.on('new:message', function(data){
-        console.log(data);
-        $scope.msg.content += data + " ";
+    $scope.$on('new:message', function(){
+        $scope.msg = ServiceMessages.getMessage();
     });
 
-    $scope.sendMessage = function (){
-        socketio.emit('send:message', this.msg.own);
-        $scope.msg.own = '';
-    };
+    Init();
 
 
 }]);

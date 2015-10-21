@@ -34,27 +34,27 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
 
 var app = angular.module('dollars');
 
-app.controller('chat', ['$scope', '$state', 'socketio', function( $scope, $state, socketio ) {
+app.controller('chat', ['$scope', '$state', 'socketio', 'ServiceMessages', function( $scope, $state, socketio, ServiceMessages ) {
 
 
     $scope.user = '';
-    $scope.msg = {
-      own: '',
-      content: ''
+    $scope.msg = {};
+
+    var Init = function(){
+
+        ServiceMessages.getMessages();
     };
 
-    $scope.message = '';
+    $scope.sendMessage = function (message){
+        ServiceMessages.sendMessage(message);
+        $scope.message = '';
+    };
 
-
-    socketio.on('new:message', function(data){
-        console.log(data);
-        $scope.msg.content += data + " ";
+    $scope.$on('new:message', function(){
+        $scope.msg = ServiceMessages.getMessage();
     });
 
-    $scope.sendMessage = function (){
-        socketio.emit('send:message', this.msg.own);
-        $scope.msg.own = '';
-    };
+    Init();
 
 
 }]);
@@ -186,3 +186,41 @@ app.factory('socketio', function ($rootScope) {
         }
     };
 });
+;
+var app = angular.module('dollars');
+
+app.service('ServiceMessages', ['socketio', '$rootScope', function( socketio, $rootScope ){
+
+    var messages  = {};
+
+    socketio.on('new:message', function(data){
+            messages[data.id] = data;
+            $rootScope.$broadcast("new:message");
+    });
+
+    socketio.on('new:messages', function(data){
+            messages = data;
+            $rootScope.$broadcast("new:message");
+    });
+
+    this.sendMessage = function (message){
+        socketio.emit('send:message', message);
+    };
+
+    this.getMessage = function() {
+        return messages;
+    }
+
+    this.getMessages = function() {
+        socketio.emit('get:messages');
+    }
+
+    Object.size = function(obj) {
+        var size = 0, key;
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) size++;
+        }
+        return size;
+    };
+
+}]);
