@@ -2,7 +2,7 @@
 var app = angular.module('dollars');
 
 app.factory('socketio', function ($rootScope) {
-    var socket = io.connect('http://localhost:8080');
+    var socket = io.connect('http://localhost:4040');
     return {
         on: function (eventName, callback) {
             socket.on(eventName, function () {

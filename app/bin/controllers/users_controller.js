@@ -1,16 +1,19 @@
 
 var db = require('./db_controller.js');
 var Promise = require('bluebird');
+var session = require('./session_controller.js');
 
 module.exports = {
-    
+
+
     login: function(login, password, req, res) {
 
         db.getUser(login)
             .then(function(user){
                 if (user) {
                     if (user.password === password) {
-                        res.send('access');
+                        console.log('Poprawne has³o');
+                        session.createSession(req, res, user);
                     } else
                         res.send('wrong password');
                 } else

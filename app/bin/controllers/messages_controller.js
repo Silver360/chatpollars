@@ -16,7 +16,7 @@ module.exports = {
             'Renio',
             msg,
             new Date()
-        ]
+        ];
 
         this.messages.push(this.msg);
         return this.msg;

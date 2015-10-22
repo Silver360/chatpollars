@@ -25,7 +25,7 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
             });
 
 
-        $urlRouterProvider.otherwise('/chat')
+        $urlRouterProvider.otherwise('/login')
 
 
     }
@@ -73,7 +73,7 @@ app.controller('login', ['$scope', '$state', '$http', function( $scope, $state, 
     $scope.msg = '';
 
     $scope.login = function(){
-        $http.post('http://localhost:8080/login', $scope.auth)
+        $http.post('http://localhost:4040/login', $scope.auth)
             .success(function (data, status) {
                 if(data == 'access')
                     $state.go('chat');
@@ -164,7 +164,7 @@ app.directive('validate', function () {
 var app = angular.module('dollars');
 
 app.factory('socketio', function ($rootScope) {
-    var socket = io.connect('http://localhost:8080');
+    var socket = io.connect('http://localhost:4040');
     return {
         on: function (eventName, callback) {
             socket.on(eventName, function () {

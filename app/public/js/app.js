@@ -25,7 +25,7 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
             });
 
 
-        $urlRouterProvider.otherwise('/chat')
+        $urlRouterProvider.otherwise('/login')
 
 
     }
