@@ -10,10 +10,10 @@
     </ul> -->
     <div style="margin-top: 200px">
       <div ng-repeat="messages in msg">
-          <p ng-hide="true">{{ messages.id }}</p>
-          <p>Dodal: {{ messages.user }}</p>
-          <p>Wiadomosc: {{ messages.message }}<p>
-          <p>Date: {{ messages.timestamp }}</p>
+          <p ng-hide="true">{{ messages[0] }}</p>
+          <p>Dodal: {{ messages[1] }}</p>
+          <p>Wiadomosc: {{ messages[2] }}<p>
+          <p>Date: {{ messages[3] }}</p>
       </div>
       <input ng-model="message" style="color: black;">
       <input type="button" ng-click="sendMessage(message)">
