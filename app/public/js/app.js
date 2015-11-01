@@ -16,12 +16,22 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
             .state('login', {
                 url: '/login',
                 templateUrl: 'views/login.html',
-                controller: 'login'
+                controller: 'login',
+                resolve: {
+                    authentication: function(factoryAuthentication){
+                        factoryAuthentication.init();
+                    }
+                }
             })
             .state('chat', {
                 url: '/chat',
                 templateUrl: 'views/chat.html',
-                controller: 'chat'
+                controller: 'chat',
+                resolve: {
+                    authentication: function(factoryAuthentication){
+                        factoryAuthentication.init();
+                    }
+                }
             });
 
 

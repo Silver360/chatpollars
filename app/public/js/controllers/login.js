@@ -2,8 +2,7 @@
 
 var app = angular.module('dollars');
 
-app.controller('login', ['$scope', '$state', '$http', function( $scope, $state, $http ) {
-
+app.controller('login', ['$scope', 'serviceLogin', 'factoryAuthentication',  function( $scope, serviceLogin, factoryAuthentication  ) {
 
     $scope.auth = {
         login: '',
@@ -13,16 +12,11 @@ app.controller('login', ['$scope', '$state', '$http', function( $scope, $state, 
     $scope.msg = '';
 
     $scope.login = function(){
-        $http.post('http://localhost:4040/login', $scope.auth)
-            .success(function (data, status) {
-                if(data == 'access')
-                    $state.go('chat');
-                else
-                    this.msg = data;
-            })
-            .error(function (data) {
-                console.log('ErrorLogin: ' + data);
-            })
-    }
+        serviceLogin.login($scope.auth);
+    };
+
+    $scope.$on('login:erorr', function(){
+        $scope.msg = serviceLogin.getError();
+    });
 
 }]);

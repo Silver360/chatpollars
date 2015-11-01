@@ -1,7 +1,7 @@
 
 var app = angular.module('dollars');
 
-app.controller('preLogin', ['$scope', '$state', function( $scope, $state ) {
+app.controller('preLogin', ['$scope', '$state', 'factoryAuthentication', function( $scope, $state, factoryAuthentication ) {
 
     $scope.appInit = function () {
 

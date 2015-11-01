@@ -2,8 +2,7 @@
 
 var app = angular.module('dollars');
 
-app.controller('chat', ['$scope', '$state', 'socketio', 'ServiceMessages', function( $scope, $state, socketio, ServiceMessages ) {
-
+app.controller('chat', ['$scope', '$state', 'ServiceMessages', function( $scope, $state, ServiceMessages ) {
 
     $scope.user = '';
     $scope.msg = {};

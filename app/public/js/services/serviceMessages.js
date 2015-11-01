@@ -21,11 +21,11 @@ app.service('ServiceMessages', ['socketio', '$rootScope', function( socketio, $r
 
     this.getMessage = function() {
         return messages;
-    }
+    };
 
     this.getMessages = function() {
         socketio.emit('get:messages');
-    }
+    };
 
     Object.size = function(obj) {
         var size = 0, key;

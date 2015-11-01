@@ -6,19 +6,19 @@ var express = require('express'),
     msg = require('./bin/models/messages.js'),
     db = require('./bin/controllers/db_controller.js'),
     bodyParser = require('body-parser'),
-    cookieParser = require('cookie-parser'),
-    session = require('express-session');
+    cookieParser = require('cookie-parser');
 
-app.use(bodyParser());
-app.use(cookieParser('MAGICString'));
-app.use(session());
+app.use(bodyParser.json({ extended: true }));
+db.init(app, io).then(function(data){
 
-//app.http().io();
-db.init(app);
+    console.log(data);
+    require('./bin/routes.js').init(app, io);
+    server.listen(4040);
+
+    console.log('Nasluchuje na 4040');
+
+});
 
 
 
-require('./bin/routes.js').init(app, io);
-server.listen(4040);
 
-console.log('Nasluchuje na 4040');

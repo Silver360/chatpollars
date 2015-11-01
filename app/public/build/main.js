@@ -16,12 +16,22 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
             .state('login', {
                 url: '/login',
                 templateUrl: 'views/login.html',
-                controller: 'login'
+                controller: 'login',
+                resolve: {
+                    authentication: function(factoryAuthentication){
+                        factoryAuthentication.init();
+                    }
+                }
             })
             .state('chat', {
                 url: '/chat',
                 templateUrl: 'views/chat.html',
-                controller: 'chat'
+                controller: 'chat',
+                resolve: {
+                    authentication: function(factoryAuthentication){
+                        factoryAuthentication.init();
+                    }
+                }
             });
 
 
@@ -34,8 +44,7 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
 
 var app = angular.module('dollars');
 
-app.controller('chat', ['$scope', '$state', 'socketio', 'ServiceMessages', function( $scope, $state, socketio, ServiceMessages ) {
-
+app.controller('chat', ['$scope', '$state', 'ServiceMessages', function( $scope, $state, ServiceMessages ) {
 
     $scope.user = '';
     $scope.msg = {};
@@ -62,8 +71,7 @@ app.controller('chat', ['$scope', '$state', 'socketio', 'ServiceMessages', funct
 
 var app = angular.module('dollars');
 
-app.controller('login', ['$scope', '$state', '$http', function( $scope, $state, $http ) {
-
+app.controller('login', ['$scope', 'serviceLogin', 'factoryAuthentication',  function( $scope, serviceLogin, factoryAuthentication  ) {
 
     $scope.auth = {
         login: '',
@@ -73,22 +81,17 @@ app.controller('login', ['$scope', '$state', '$http', function( $scope, $state, 
     $scope.msg = '';
 
     $scope.login = function(){
-        $http.post('http://localhost:4040/login', $scope.auth)
-            .success(function (data, status) {
-                if(data == 'access')
-                    $state.go('chat');
-                else
-                    this.msg = data;
-            })
-            .error(function (data) {
-                console.log('ErrorLogin: ' + data);
-            })
-    }
+        serviceLogin.login($scope.auth);
+    };
+
+    $scope.$on('login:erorr', function(){
+        $scope.msg = serviceLogin.getError();
+    });
 
 }]);;
 var app = angular.module('dollars');
 
-app.controller('preLogin', ['$scope', '$state', function( $scope, $state ) {
+app.controller('preLogin', ['$scope', '$state', 'factoryAuthentication', function( $scope, $state, factoryAuthentication ) {
 
     $scope.appInit = function () {
 
@@ -161,6 +164,22 @@ app.directive('validate', function () {
     }
 
 });;
+
+var app = angular.module('dollars');
+
+app.factory('factoryAuthentication', ['socketio', '$state', '$location', function( socketio, $state, $location ){
+
+    return {
+        init: function() {
+            socketio.emit('authentication', $location.path());
+            socketio.on('access:denied', function (data) {
+                $state.go('login');
+            });
+        }
+    };
+
+}]);
+;
 var app = angular.module('dollars');
 
 app.factory('socketio', function ($rootScope) {
@@ -189,6 +208,32 @@ app.factory('socketio', function ($rootScope) {
 ;
 var app = angular.module('dollars');
 
+app.service('serviceLogin', ['socketio', '$rootScope', '$state', function( socketio, $rootScope, $state ){
+
+    var error = {};
+
+    socketio.on('login:res', function(data){
+        if(data == 'access')
+            $state.go('chat');
+        else {
+            error = data;
+            $rootScope.$broadcast("login:erorr");
+        }
+    });
+
+    this.login = function (auth){
+        socketio.emit('login', auth);
+    };
+
+    this.getError = function(){
+        return error;
+    };
+
+
+}]);
+;
+var app = angular.module('dollars');
+
 app.service('ServiceMessages', ['socketio', '$rootScope', function( socketio, $rootScope ){
 
     var messages  = {};
@@ -209,11 +254,11 @@ app.service('ServiceMessages', ['socketio', '$rootScope', function( socketio, $r
 
     this.getMessage = function() {
         return messages;
-    }
+    };
 
     this.getMessages = function() {
         socketio.emit('get:messages');
-    }
+    };
 
     Object.size = function(obj) {
         var size = 0, key;

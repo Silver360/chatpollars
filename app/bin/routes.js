@@ -10,38 +10,60 @@ module.exports = {
     userReq: require('./controllers/users_controller.js'),
     msgReq: require('./controllers/messages_controller.js'),
     sessionReq: require('./controllers/session_controller.js'),
-    bodyParser: require('body-parser'),
     init: function(app, io){
         this.app = app;
         this.io = io;
 
-        this.app.use(bodyParser.json({
-            extended: true
-        }));
-
         this.static(this.app);
-        this.login(this.app, this.userReq);
+        this.login(this.io, this.userReq, this.sessionReq);
         this.logout(this.app, this.sessionReq);
         this.message(this.io, this.msgReq);
         this.messages(this.io, this.msgReq);
-        this.authentication(this.app, this.sessionReq);
+        this.authentication(this.app, this.sessionReq, this.io);
     },
     static: function(app){
         app.use( '/', this.express.static('./public') );
     },
-    login: function(app, userReq){
-        app.post( '/login', function(req, res){
-            userReq.login(req.body.login, req.body.password, req, res);
+    login: function(io, userReq, sessionReq){
+        io.sockets.on('connection', function(socket){
+            socket.on('login', function(data){
+                userReq.login(data.login, data.password).then(function(data){
+                    sessionReq.createSession(socket.request, data);
+                    io.sockets.emit('login:res', 'access');
+                }).catch(function(e){
+                    io.sockets.emit('login:res', '' + e);
+                });
+            });
         });
     },
     logout: function(app, sessionReq){
         app.get( '/logout', function(req, res){
+            console.log('Zosta³es wylogowany');
             sessionReq.destroySesssion(req, res);
         });
     },
-    authentication: function(app, sessionReq){
+    authentication: function(app, sessionReq, io){
         app.use( '/', function(req, res){
-            sessionReq.verificationSession(req, res);
+            if(sessionReq.verificationSession(req) == 'no-access' ){
+                console.log('Jestes w niew³¹sciwym miejscu [REST]');
+                res.redirect('/');
+            }
+        });
+
+        io.sockets.on('connection', function(socket){
+            socket.on('authentication', function(data) {
+                if (sessionReq.verificationSession(socket.request) == 'access') {
+                    console.log('Wszystko ok');
+                    io.sockets.emit('access', false);
+                } else {
+                    if(data == '/login' || data == '/prelogin') {
+                        console.log('Sesja nie jest aktywna ale mozesz tu byc :)');
+                    } else {
+                        console.log('Jestes w niew³¹sciwym miejscu [SOCKETY]]');
+                        io.sockets.emit('access:denied', false);
+                    }
+                }
+            });
         });
     },
     messages: function(io, msgReq){

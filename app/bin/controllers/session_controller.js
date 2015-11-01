@@ -2,24 +2,29 @@
 
 module.exports = {
 
-    init: function(app){
-    },
-    verificationSession: function(req, res){
+    verificationSession: function(req){
         console.log('Sprawdzam Sesje :)');
+        console.log(req.session);
         if(req.session.user){
-            console.log(req.session.sucess);
             console.log('Sesja Aktywna');
+            return 'access';
         } else {
-            req.session.error = "Odmowa dostepu!";
-            res.redirect('/login');
+            if(req.path !== '/login') {
+                req.session.error = "Odmowa dostepu!";
+                return 'no-access';
+            } else {
+                return '';
+            }
         }
     },
-    createSession: function(req, res, user){
+    createSession: function(req, user){
+        console.log('Tworze sesje');
+        console.log(req.session);
+        console.log(req.session.user);
         req.session.regenerate(function(){
             req.session.user = user;
             req.session.succes = 'Uwierzytelniono jako ' + user.login;
         });
-        res.redirect('/chat');
     },
     destroySesssion: function(req, res){
         req.session.destroy(function(){

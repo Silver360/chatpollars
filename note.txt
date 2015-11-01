@@ -10,7 +10,7 @@ use newDB
 db.createCollection("newCollection")
 
 //Wyswietlanie kolekcji
-coll = db.getCollection("users")
+coll = db.getCollection("session")
 coll.find()
 
 //Dodawanie dokumentu do kolejkcji
