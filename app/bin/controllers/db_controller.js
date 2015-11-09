@@ -18,19 +18,14 @@ module.exports = {
                 if (err) {
                     reject(err);
                 } else {
-                    var sessionMiddleware = session({
-                        secret: 'LXNlc3Npb24gZGVwcmVjYXRlZCB1',
-                        store: new mongoStore({
-                            db: mongoose.connection.db,
-                            collection: 'session'
-                        }),
-                        resave: true,
+                    app.use(session({
+                        secret: 'keyboard cat',
+                        resave: false,
                         saveUninitialized: true
-                    });
-                    io.use(function(socket, next) {
-                        sessionMiddleware(socket.request, socket.request.res, next);
-                    });
-                    app.use(sessionMiddleware);
+                    }));
+                    // io.use(function(socket, next) {
+                    //     sessionMiddleware(socket.request, socket.request.res, next);
+                    // });
                     resolve('Object Session Create');
                 }
             });
@@ -79,6 +74,3 @@ module.exports = {
     }
 
 };
-
-
-

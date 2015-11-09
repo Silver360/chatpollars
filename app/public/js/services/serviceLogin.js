@@ -1,7 +1,7 @@
 
 var app = angular.module('dollars');
 
-app.service('serviceLogin', ['socketio', '$rootScope', '$state', function( socketio, $rootScope, $state ){
+app.service('serviceLogin', ['socketio', '$rootScope', '$state', '$http', function( socketio, $rootScope, $state, $http ){
 
     var error = {};
 
@@ -15,7 +15,13 @@ app.service('serviceLogin', ['socketio', '$rootScope', '$state', function( socke
     });
 
     this.login = function (auth){
-        socketio.emit('login', auth);
+        //socketio.emit('login', auth); console.log('AUtoryzacja: ', auth)
+        $http.post('http://localhost:4040/login', auth)
+            .then(function(result){
+                console.log('Dane zwrocone przy prubie logowania ', result);
+        }, function(err){
+            console.log('Error przy probie logowania: ', err);
+        });
     };
 
     this.getError = function(){

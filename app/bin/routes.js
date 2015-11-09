@@ -1,6 +1,4 @@
 
-var bodyParser = require('body-parser');
-
 
 module.exports = {
 
@@ -15,8 +13,9 @@ module.exports = {
         this.io = io;
 
         this.static(this.app);
-        this.login(this.io, this.userReq, this.sessionReq);
-        this.logout(this.app, this.sessionReq);
+//        this.login(this.io, this.userReq, this.sessionReq);
+        this.loginRest(this.app, this.userReq, this.sessionReq);
+//        this.logout(this.app, this.sessionReq);
         this.message(this.io, this.msgReq);
         this.messages(this.io, this.msgReq);
         this.authentication(this.app, this.sessionReq, this.io);
@@ -36,6 +35,18 @@ module.exports = {
             });
         });
     },
+    loginRest: function(app, userReq, sessionReq){
+        app.post( '/login', function(req, res){
+            userReq.login(req.body.login, req.body.password).then(function(data){
+                if(data){
+                    sessionReq.createSession(req, data);
+                }
+            }).catch(function(e){
+                console.log('Err: ', e);
+                res.redirect('/chat');
+            });
+        });
+    },
     logout: function(app, sessionReq){
         app.get( '/logout', function(req, res){
             console.log('Zosta³es wylogowany');
@@ -45,26 +56,28 @@ module.exports = {
     authentication: function(app, sessionReq, io){
         app.use( '/', function(req, res){
             if(sessionReq.verificationSession(req) == 'no-access' ){
-                console.log('Jestes w niew³¹sciwym miejscu [REST]');
+                console.log('Jestes w niew³sciwym miejscu [REST]');
                 res.redirect('/');
+            } else {
+                console.log('Wszystko ok :)');
             }
         });
 
-        io.sockets.on('connection', function(socket){
-            socket.on('authentication', function(data) {
-                if (sessionReq.verificationSession(socket.request) == 'access') {
-                    console.log('Wszystko ok');
-                    io.sockets.emit('access', false);
-                } else {
-                    if(data == '/login' || data == '/prelogin') {
-                        console.log('Sesja nie jest aktywna ale mozesz tu byc :)');
-                    } else {
-                        console.log('Jestes w niew³¹sciwym miejscu [SOCKETY]]');
-                        io.sockets.emit('access:denied', false);
-                    }
-                }
-            });
-        });
+        // io.sockets.on('connection', function(socket){
+        //     socket.on('authentication', function(data) {
+        //         if (sessionReq.verificationSession(socket.request) == 'access') {
+        //             console.log('Wszystko ok');
+        //             io.sockets.emit('access', false);
+        //         } else {
+        //             if(data == '/login' || data == '/prelogin') {
+        //                 console.log('Sesja nie jest aktywna ale mozesz tu byc :)');
+        //             } else {
+        //                 console.log('Jestes w niew³¹sciwym miejscu [SOCKETY]]');
+        //                 io.sockets.emit('access:denied', false);
+        //             }
+        //         }
+        //     });
+        // });
     },
     messages: function(io, msgReq){
       io.sockets.on('connection', function(socket){

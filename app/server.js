@@ -6,19 +6,19 @@ var express = require('express'),
     msg = require('./bin/models/messages.js'),
     db = require('./bin/controllers/db_controller.js'),
     bodyParser = require('body-parser'),
-    cookieParser = require('cookie-parser');
+    session = require('express-session');
+
 
 app.use(bodyParser.json({ extended: true }));
-db.init(app, io).then(function(data){
 
-    console.log(data);
-    require('./bin/routes.js').init(app, io);
-    server.listen(4040);
+app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: false
+}));
 
-    console.log('Nasluchuje na 4040');
+require('./bin/routes.js').init(app, io);
 
+server.listen(4040, function(){
+    console.log('Nasluchuje na porcie ' + this.address().port);
 });
-
-
-
-
