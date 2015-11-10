@@ -19,21 +19,46 @@ module.exports = {
         this.logout(this.app, this.sessionReq);
         this.message(this.io, this.msgReq);
         this.messages(this.io, this.msgReq);
-        this.authentication(this.app, this.sessionReq, this.io);
+//        this.authentication(this.app, this.sessionReq, this.io);
+        this.findSession(this.app);
+        this.loginRest(this.app, this.userReq, this.sessionReq)
+        this.findSockets(this.io);
     },
     static: function(app){
         app.use( '/', this.express.static('./public') );
     },
+    findSession: function(app){
+        app.get( '/find', function(req, res){
+            console.log('Session tutaj here i nic wiecej : ', req.session);
+            res.send(req.session);
+        });
+    },
+    findSockets: function(io){
+        io.sockets.on('connection', function(socket){
+            socket.on('find', function(data){
+                console.log('Socket: ', this.request.session);
+                io.sockets.emit('done', this.request.session);
+            });
+        });
+    },
     login: function(io, userReq, sessionReq){
         io.sockets.on('connection', function(socket){
             socket.on('login', function(data){
-                userReq.login(data.login, data.password).then(function(data){
-                    sessionReq.createSession(socket.request, data);
-                    io.sockets.emit('login:res', 'access');
-                }).catch(function(e){
-                    io.sockets.emit('login:res', '' + e);
-                });
+                this.request.session.user = { login: data.login, password: data.password };
+                console.log('Done: ', this.request.session.user)
+                // userReq.login(data.login, data.password).then(function(data){
+                //     sessionReq.createSession(socket.request, data);
+                //     io.sockets.emit('login:res', 'access');
+                // }).catch(function(e){
+                //     io.sockets.emit('login:res', '' + e);
+                // });
             });
+        });
+    },
+    loginRest: function(app, userReq, sessionReq){
+        app.get( '/setSession', function(req, res){
+            req.session.user = { login: 'Renio', password: 'Renio?' }
+            res.send(req.session.user);
         });
     },
     logout: function(app, sessionReq){
