@@ -1,12 +1,11 @@
-var express = require('express'),
-    app = express(),
-    server = require('http').createServer(app),
-    io = require('socket.io')(server),
+var app = require('express')(),
+    server = require('http').Server(app),
     user = require('./bin/models/users.js'),
     msg = require('./bin/models/messages.js'),
     db = require('./bin/controllers/db_controller.js'),
     bodyParser = require('body-parser'),
-    session = require('express-session');
+    session = require('express-session'),
+    io = require('socket.io')(server);
 
 
 app.use(bodyParser.json({ extended: true }));
