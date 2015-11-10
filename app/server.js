@@ -10,14 +10,15 @@ var app = require('express')(),
 
 app.use(bodyParser.json({ extended: true }));
 
-app.use(session({
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: false
-}));
+db.init(app, io).then(function(data){
 
-require('./bin/routes.js').init(app, io);
+    console.log(data);
+    require('./bin/routes.js').init(app, io);
+    server.listen(4040);
 
-server.listen(4040, function(){
-    console.log('Nasluchuje na porcie ' + this.address().port);
+
+  server.listen(4040, function(){
+      console.log('Nasluchuje na porcie ' + this.address().port);
+  });
+
 });

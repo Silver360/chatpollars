@@ -13,15 +13,22 @@ module.exports = {
         this.io = io;
 
         this.static(this.app);
-//        this.login(this.io, this.userReq, this.sessionReq);
+        this.login(this.io, this.userReq, this.sessionReq);
         this.loginRest(this.app, this.userReq, this.sessionReq);
-//        this.logout(this.app, this.sessionReq);
+        this.logout(this.app, this.sessionReq);
         this.message(this.io, this.msgReq);
         this.messages(this.io, this.msgReq);
-        this.authentication(this.app, this.sessionReq, this.io);
+        this.findSession(this.app);
+        this.authentication(this.app);
     },
     static: function(app){
         app.use( '/', this.express.static('./public') );
+    },
+    findSession: function(app){
+        app.get( '/findSession', function(req, res){
+            console.log('Moja Sesja: ', req.session);
+            res.send(req.session);
+        });
     },
     login: function(io, userReq, sessionReq){
         io.sockets.on('connection', function(socket){
@@ -37,14 +44,19 @@ module.exports = {
     },
     loginRest: function(app, userReq, sessionReq){
         app.post( '/login', function(req, res){
-            userReq.login(req.body.login, req.body.password).then(function(data){
-                if(data){
-                    sessionReq.createSession(req, data);
-                }
-            }).catch(function(e){
-                console.log('Err: ', e);
-                res.redirect('/chat');
-            });
+
+            req.session.user = { login: req.body.login, password: req.body.password }
+            res.send(req.session.user);
+            // userReq.login(req.body.login, req.body.password).then(function(data){
+            //     if(data){
+            //         req.session.user = { login: req.body.login, password: req.body.password }
+            //         res.send(req.session.user);
+            //         //sessionReq.createSession(req, data, res);
+            //     }
+            // }).catch(function(e){
+            //     console.log('Err: ', e);
+            //     res.redirect('/chat');
+            // });
         });
     },
     logout: function(app, sessionReq){
@@ -53,13 +65,14 @@ module.exports = {
             sessionReq.destroySesssion(req, res);
         });
     },
-    authentication: function(app, sessionReq, io){
-        app.use( '/', function(req, res){
-            if(sessionReq.verificationSession(req) == 'no-access' ){
-                console.log('Jestes w niew³sciwym miejscu [REST]');
-                res.redirect('/');
+    authentication: function(app){
+        app.get( '/setSession', function(req, res){
+            if (!req.session.user){
+                req.session.user = { login: 'Renio', password: 'Renio?', count: 1 };
+                res.send(req.session.user);
             } else {
-                console.log('Wszystko ok :)');
+                req.session.user = { login: 'Renio', password: 'Renio?', count: '1++' };
+                res.send('Session: ' + req.session.user);
             }
         });
 

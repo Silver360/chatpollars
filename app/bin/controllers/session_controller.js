@@ -17,11 +17,13 @@ module.exports = {
         //     }
         // }
     },
-    createSession: function(req, user){
+    createSession: function(req, user, res){
         console.log('Tworze sesje ================================');
         //req.session.regenerate(function(){
-            req.session.user = user;
+            req.session.msg = 'jestem sobie w sesji';
             req.session.status = 'Uwierzytelniono jako ' + user.login;
+            req.session.save()
+            res.send('Sesja: ', req.session)
         //});
         console.log(req.session);
     },
