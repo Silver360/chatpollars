@@ -32,11 +32,17 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
                         factoryAuthentication.init();
                     }
                 }
+            })
+            .state('otherwise', {
+                url: '*path',
+                templateUrl: 'views/chat.html',
+                controller: 'chat',
+                resolve: {
+                    authentication: function(factoryAuthentication){
+                        factoryAuthentication.init();
+                    }
+                }
             });
-
-
-        $urlRouterProvider.otherwise('/login')
-
 
     }
 ]);

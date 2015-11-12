@@ -19,7 +19,7 @@ module.exports = {
         this.logout(this.app, this.sessionReq);
         this.message(this.io, this.msgReq);
         this.messages(this.io, this.msgReq);
-//        this.authentication(this.app, this.sessionReq, this.io);
+        this.authentication(this.app, this.sessionReq, this.io);
         this.findSession(this.app);
         this.loginRest(this.app, this.userReq, this.sessionReq)
         this.findSockets(this.io);
@@ -44,14 +44,12 @@ module.exports = {
     login: function(io, userReq, sessionReq){
         io.sockets.on('connection', function(socket){
             socket.on('login', function(data){
-                this.request.session.user = { login: data.login, password: data.password };
-                console.log('Done: ', this.request.session.user)
-                // userReq.login(data.login, data.password).then(function(data){
-                //     sessionReq.createSession(socket.request, data);
-                //     io.sockets.emit('login:res', 'access');
-                // }).catch(function(e){
-                //     io.sockets.emit('login:res', '' + e);
-                // });
+                userReq.login(data.login, data.password).then(function(data){
+                    sessionReq.createSession(socket.request, data);
+                    io.sockets.emit('login:res', 'access');
+                }).catch(function(e){
+                    io.sockets.emit('login:res', '' + e);
+                });
             });
         });
     },
@@ -72,6 +70,8 @@ module.exports = {
             if(sessionReq.verificationSession(req) == 'no-access' ){
                 console.log('Jestes w niew³¹sciwym miejscu [REST]');
                 res.redirect('/');
+            } else {
+                res.sen('access');
             }
         });
 
@@ -79,7 +79,7 @@ module.exports = {
             socket.on('authentication', function(data) {
                 if (sessionReq.verificationSession(socket.request) == 'access') {
                     console.log('Wszystko ok');
-                    io.sockets.emit('access', false);
+                    io.sockets.emit('access:go', false);
                 } else {
                     if(data == '/login' || data == '/prelogin') {
                         console.log('Sesja nie jest aktywna ale mozesz tu byc :)');

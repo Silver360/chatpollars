@@ -10,6 +10,9 @@ app.factory('factoryAuthentication', ['socketio', '$state', '$location', functio
             socketio.on('access:denied', function (data) {
                 $state.go('login');
             });
+            socketio.on('access:go', function (data) {
+                $state.go('chat');
+            });
         }
     };
 

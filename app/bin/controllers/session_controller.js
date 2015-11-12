@@ -19,12 +19,11 @@ module.exports = {
     },
     createSession: function(req, user){
         console.log('Tworze sesje');
-        console.log(req.session);
         console.log(req.session.user);
-        req.session.regenerate(function(){
-            req.session.user = user;
-            req.session.succes = 'Uwierzytelniono jako ' + user.login;
-        });
+        req.session.user = user;
+        req.session.succes = 'Uwierzytelniono jako ' + user.login;
+        console.log('Session: ', req.session, 'User: ',  user);
+        req.session.save();
     },
     destroySesssion: function(req, res){
         req.session.destroy(function(){

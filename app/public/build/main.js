@@ -32,11 +32,17 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
                         factoryAuthentication.init();
                     }
                 }
+            })
+            .state('otherwise', {
+                url: '*path',
+                templateUrl: 'views/chat.html',
+                controller: 'chat',
+                resolve: {
+                    authentication: function(factoryAuthentication){
+                        factoryAuthentication.init();
+                    }
+                }
             });
-
-
-        $urlRouterProvider.otherwise('/login')
-
 
     }
 ]);
@@ -174,6 +180,9 @@ app.factory('factoryAuthentication', ['socketio', '$state', '$location', functio
             socketio.emit('authentication', $location.path());
             socketio.on('access:denied', function (data) {
                 $state.go('login');
+            });
+            socketio.on('access:go', function (data) {
+                $state.go('chat');
             });
         }
     };
