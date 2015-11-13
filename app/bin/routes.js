@@ -17,11 +17,10 @@ module.exports = {
         this.static(this.app);
         this.login(this.io, this.userReq, this.sessionReq);
         this.logout(this.app, this.sessionReq);
-        this.message(this.io, this.msgReq);
+        this.message(this.io, this.msgReq, this.sessionReq);
         this.messages(this.io, this.msgReq);
         this.authentication(this.app, this.sessionReq, this.io);
         this.findSession(this.app);
-        this.loginRest(this.app, this.userReq, this.sessionReq)
         this.findSockets(this.io);
     },
     static: function(app){
@@ -29,14 +28,12 @@ module.exports = {
     },
     findSession: function(app){
         app.get( '/find', function(req, res){
-            console.log('Session tutaj here i nic wiecej : ', req.session);
             res.send(req.session);
         });
     },
     findSockets: function(io){
         io.sockets.on('connection', function(socket){
             socket.on('find', function(data){
-                console.log('Socket: ', this.request.session);
                 io.sockets.emit('done', this.request.session);
             });
         });
@@ -53,38 +50,39 @@ module.exports = {
             });
         });
     },
-    loginRest: function(app, userReq, sessionReq){
-        app.get( '/setSession', function(req, res){
-            req.session.user = { login: 'Renio', password: 'Renio?' }
-            res.send(req.session.user);
-        });
-    },
     logout: function(app, sessionReq){
         app.get( '/logout', function(req, res){
             console.log('Zosta³es wylogowany');
-            sessionReq.destroySesssion(req, res);
+            sessionReq.destroySesssion(req, function(){
+                res.redirect('/');
+            });
+
         });
     },
     authentication: function(app, sessionReq, io){
         app.use( '/', function(req, res){
-            if(sessionReq.verificationSession(req) == 'no-access' ){
-                console.log('Jestes w niew³¹sciwym miejscu [REST]');
+            if(sessionReq.verificationSession(req) === 'access' ){
+                console.log('Acces wszystko w porzadeczku :)');
+                res.redirect('/');
+            } else if (sessionReq.verificationSession(req) === 'access-from-login') {
+                console.log('Access form Login');
                 res.redirect('/');
             } else {
-                res.sen('access');
+                console.log('Jestes w niew³¹sciwym miejscu [REST]');
+                res.redirect('/');
             }
         });
 
         io.sockets.on('connection', function(socket){
             socket.on('authentication', function(data) {
-                if (sessionReq.verificationSession(socket.request) == 'access') {
+                if (sessionReq.verificationSession(socket.request) === 'access') {
                     console.log('Wszystko ok');
                     io.sockets.emit('access:go', false);
                 } else {
                     if(data == '/login' || data == '/prelogin') {
                         console.log('Sesja nie jest aktywna ale mozesz tu byc :)');
                     } else {
-                        console.log('Jestes w niew³¹sciwym miejscu [SOCKETY]]');
+                        console.log('Jestes w niew³¹sciwym miejscu [SOCKETY]');
                         io.sockets.emit('access:denied', false);
                     }
                 }
@@ -98,10 +96,16 @@ module.exports = {
           });
       });
     },
-    message: function(io, msgReq){
+    message: function(io, msgReq, sessionReq){
         io.sockets.on('connection', function(socket){
             socket.on('send:message', function(data){
-                io.sockets.emit('new:message', msgReq.createMsg(data));
+                if(data === '/logout'){
+                    sessionReq.destroySesssion(this.socket.request, function(){
+                        console.log('Wylogowany');
+                    });
+                } else {
+                    io.sockets.emit('new:message', msgReq.createMsg(data));
+                }
             });
         });
     }

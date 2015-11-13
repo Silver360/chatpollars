@@ -6,7 +6,7 @@ app.service('ServiceMessages', ['socketio', '$rootScope', function( socketio, $r
     var messages  = {};
 
     socketio.on('new:message', function(data){
-            messages[data.id] = data;
+            messages.push(data);
             $rootScope.$broadcast("new:message");
     });
 

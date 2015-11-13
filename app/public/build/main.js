@@ -20,6 +20,7 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
                 resolve: {
                     authentication: function(factoryAuthentication){
                         factoryAuthentication.init();
+                        console.log('Zaraz sprawdze i przekieruje z Login');
                     }
                 }
             })
@@ -30,19 +31,21 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
                 resolve: {
                     authentication: function(factoryAuthentication){
                         factoryAuthentication.init();
+                        console.log('Zaraz sprawdze i przekieruje z Login');
                     }
                 }
             })
             .state('otherwise', {
                 url: '*path',
-                templateUrl: 'views/chat.html',
-                controller: 'chat',
                 resolve: {
                     authentication: function(factoryAuthentication){
                         factoryAuthentication.init();
+                        console.log('Zaraz sprawdze i przekieruje z Dowolnego');
                     }
                 }
             });
+
+            $locationProvider.html5Mode(true);
 
     }
 ]);
@@ -179,9 +182,11 @@ app.factory('factoryAuthentication', ['socketio', '$state', '$location', functio
         init: function() {
             socketio.emit('authentication', $location.path());
             socketio.on('access:denied', function (data) {
+                console.log('go to login');
                 $state.go('login');
             });
             socketio.on('access:go', function (data) {
+                console.log('go to chat');
                 $state.go('chat');
             });
         }
@@ -248,7 +253,7 @@ app.service('ServiceMessages', ['socketio', '$rootScope', function( socketio, $r
     var messages  = {};
 
     socketio.on('new:message', function(data){
-            messages[data.id] = data;
+            messages.push(data);
             $rootScope.$broadcast("new:message");
     });
 

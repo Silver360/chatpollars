@@ -20,6 +20,7 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
                 resolve: {
                     authentication: function(factoryAuthentication){
                         factoryAuthentication.init();
+                        console.log('Zaraz sprawdze i przekieruje z Login');
                     }
                 }
             })
@@ -30,19 +31,21 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
                 resolve: {
                     authentication: function(factoryAuthentication){
                         factoryAuthentication.init();
+                        console.log('Zaraz sprawdze i przekieruje z Login');
                     }
                 }
             })
             .state('otherwise', {
                 url: '*path',
-                templateUrl: 'views/chat.html',
-                controller: 'chat',
                 resolve: {
                     authentication: function(factoryAuthentication){
                         factoryAuthentication.init();
+                        console.log('Zaraz sprawdze i przekieruje z Dowolnego');
                     }
                 }
             });
+
+            $locationProvider.html5Mode(true);
 
     }
 ]);

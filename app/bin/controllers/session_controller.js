@@ -4,7 +4,6 @@ module.exports = {
 
     verificationSession: function(req){
         console.log('Sprawdzam Sesje :)');
-        console.log(req.session);
         if(req.session.user){
             console.log('Sesja Aktywna');
             return 'access';
@@ -13,22 +12,20 @@ module.exports = {
                 req.session.error = "Odmowa dostepu!";
                 return 'no-access';
             } else {
-                return '';
+                return 'access-from-login';
             }
         }
     },
     createSession: function(req, user){
         console.log('Tworze sesje');
-        console.log(req.session.user);
         req.session.user = user;
         req.session.succes = 'Uwierzytelniono jako ' + user.login;
-        console.log('Session: ', req.session, 'User: ',  user);
         req.session.save();
     },
-    destroySesssion: function(req, res){
+    destroySesssion: function(req, callback){
         req.session.destroy(function(){
             console.log('Wylogowany');
-            res.redirect('/login');
+            callback();
         });
     }
 
