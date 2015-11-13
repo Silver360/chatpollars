@@ -15,9 +15,12 @@ module.exports = {
                     throw new Error('Wrong password', { statusCode: 403 });
                 }
             } else {
-                return db.saveUser(login, password);
+                throw new Error('No user in db', { statusCode: 303 });
             }
         });
+    },
+    signin: function(){
+        return db.saveUser(login, password);
     }
-    
+
 };

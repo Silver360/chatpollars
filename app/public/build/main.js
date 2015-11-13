@@ -97,7 +97,12 @@ app.controller('login', ['$scope', 'serviceLogin', 'factoryAuthentication',  fun
         $scope.msg = serviceLogin.getError();
     });
 
-}]);;
+    $scope.confirm = function(){
+        $scope.msg = '';
+    }
+
+}]);
+;
 var app = angular.module('dollars');
 
 app.controller('preLogin', ['$scope', '$state', 'factoryAuthentication', function( $scope, $state, factoryAuthentication ) {
@@ -172,7 +177,8 @@ app.directive('validate', function () {
         link: link
     }
 
-});;
+});
+;
 
 var app = angular.module('dollars');
 

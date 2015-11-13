@@ -19,4 +19,8 @@ app.controller('login', ['$scope', 'serviceLogin', 'factoryAuthentication',  fun
         $scope.msg = serviceLogin.getError();
     });
 
+    $scope.confirm = function(){
+        $scope.msg = '';
+    }
+
 }]);

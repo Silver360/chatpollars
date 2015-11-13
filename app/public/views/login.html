@@ -16,4 +16,11 @@
         </div>
     </form>
 
+    <div id="siginMsg" ng-show="msg == 'Error: No user in db'">
+        <h2>Podanego uzytkownika nie ma w bazie danych, czy utworzyc nwoego?</h2>
+        <div class="button btn btn-primary" ng-click="confirm()" ><p>Zatwierdz</p></div>
+    </div>
+
+
+
 </section>

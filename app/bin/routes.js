@@ -20,22 +20,34 @@ module.exports = {
         this.message(this.io, this.msgReq, this.sessionReq);
         this.messages(this.io, this.msgReq);
         this.authentication(this.app, this.sessionReq, this.io);
-        this.findSession(this.app);
-        this.findSockets(this.io);
+        this.findSession(this.app, this.io);
+        this.requestHandler(this.app);
     },
     static: function(app){
         app.use( '/', this.express.static('./public') );
     },
-    findSession: function(app){
+    findSession: function(app, io){
         app.get( '/find', function(req, res){
             res.send(req.session);
         });
-    },
-    findSockets: function(io){
+
         io.sockets.on('connection', function(socket){
             socket.on('find', function(data){
-                io.sockets.emit('done', this.request.session);
+                io.sockets.emit('done', socket.request.session);
             });
+        });
+    },
+    requestHandler: function(app){
+        app.get( '/chat', function(req, res){
+            res.redirect('/#/chat');
+        });
+
+        app.get( '/login', function(req, res){
+            res.redirect('/#/login');
+        });
+
+        app.get( '/prelogin', function(req, res){
+            res.redirect('/#/prelogin');
         });
     },
     login: function(io, userReq, sessionReq){
@@ -60,12 +72,12 @@ module.exports = {
         });
     },
     authentication: function(app, sessionReq, io){
-        app.use( '/', function(req, res){
+        app.get( '/*', function(req, res){
             if(sessionReq.verificationSession(req) === 'access' ){
-                console.log('Acces wszystko w porzadeczku :)');
+                console.log('Acces wszystko w porzadeczku :) [REST]');
                 res.redirect('/');
             } else if (sessionReq.verificationSession(req) === 'access-from-login') {
-                console.log('Access form Login');
+                console.log('Access form Login [REST]');
                 res.redirect('/');
             } else {
                 console.log('Jestes w niew³¹sciwym miejscu [REST]');
@@ -76,11 +88,11 @@ module.exports = {
         io.sockets.on('connection', function(socket){
             socket.on('authentication', function(data) {
                 if (sessionReq.verificationSession(socket.request) === 'access') {
-                    console.log('Wszystko ok');
+                    console.log('Wszystko ok [SOCKETY]');
                     io.sockets.emit('access:go', false);
                 } else {
                     if(data == '/login' || data == '/prelogin') {
-                        console.log('Sesja nie jest aktywna ale mozesz tu byc :)');
+                        console.log('Sesja nie jest aktywna ale mozesz tu byc :) [SOCKETY]');
                     } else {
                         console.log('Jestes w niew³¹sciwym miejscu [SOCKETY]');
                         io.sockets.emit('access:denied', false);
@@ -100,8 +112,9 @@ module.exports = {
         io.sockets.on('connection', function(socket){
             socket.on('send:message', function(data){
                 if(data === '/logout'){
-                    sessionReq.destroySesssion(this.socket.request, function(){
+                    sessionReq.destroySesssion(socket.request, function(){
                         console.log('Wylogowany');
+                        io.sockets.emit('access:denied', false);
                     });
                 } else {
                     io.sockets.emit('new:message', msgReq.createMsg(data));

@@ -1,9 +1,25 @@
 
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
 section#login{
 
   text-align: center;
   margin: 400px auto auto auto;
   width: 600px;
+
+  #siginMsg{
+      position: absolute;
+      left: 50px;
+      bottom: 50px;
+      border: solid white 10px;
+      border-radius: 10px;
+      padding: 80px;
+      animation-name: fadeIn;
+      animation-duration: 4s;
+  }
 
   form{
 
