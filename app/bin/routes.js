@@ -64,7 +64,7 @@ module.exports = {
     },
     logout: function(app, sessionReq){
         app.get( '/logout', function(req, res){
-            console.log('Zosta³es wylogowany');
+            console.log('Zostaï¿½es wylogowany');
             sessionReq.destroySesssion(req, function(){
                 res.redirect('/');
             });
@@ -80,10 +80,24 @@ module.exports = {
                 console.log('Access form Login [REST]');
                 res.redirect('/');
             } else {
-                console.log('Jestes w niew³¹sciwym miejscu [REST]');
+                console.log('Jestes w niewï¿½ï¿½sciwym miejscu [REST]');
                 res.redirect('/');
             }
         });
+
+        app.get( '/authentication', function(req, res){
+            if(sessionReq.verificationSession(req) === 'access'){
+                console.log('Acccess:go [REST]');
+                res.send('access:go');
+            } else {
+                console.log('Acccess:deneid [REST]');
+                res.send('access:deneid')
+            }
+        });
+
+        //app.get( '/*', function(req, res){
+        //    res.redirect('/#/login');
+        //});
 
         io.sockets.on('connection', function(socket){
             socket.on('authentication', function(data) {
@@ -94,7 +108,7 @@ module.exports = {
                     if(data == '/login' || data == '/prelogin') {
                         console.log('Sesja nie jest aktywna ale mozesz tu byc :) [SOCKETY]');
                     } else {
-                        console.log('Jestes w niew³¹sciwym miejscu [SOCKETY]');
+                        console.log('Jestes w niewï¿½ï¿½sciwym miejscu [SOCKETY]');
                         io.sockets.emit('access:denied', false);
                     }
                 }

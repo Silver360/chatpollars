@@ -7,7 +7,7 @@ app.controller('login', ['$scope', 'serviceLogin', 'factoryAuthentication',  fun
     $scope.auth = {
         login: '',
         password: ''
-    };
+     };
 
     $scope.msg = '';
 

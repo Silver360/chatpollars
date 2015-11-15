@@ -19,8 +19,8 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
                 controller: 'login',
                 resolve: {
                     authentication: function(factoryAuthentication){
-                        factoryAuthentication.init();
                         console.log('Zaraz sprawdze i przekieruje z Login');
+                        factoryAuthentication.init('login');
                     }
                 }
             })
@@ -30,8 +30,8 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
                 controller: 'chat',
                 resolve: {
                     authentication: function(factoryAuthentication){
-                        factoryAuthentication.init();
-                        console.log('Zaraz sprawdze i przekieruje z Login');
+                        console.log('Zaraz sprawdze i przekieruje z Chat');
+                        factoryAuthentication.init('chat');
                     }
                 }
             })
@@ -39,8 +39,8 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
                 url: '*path',
                 resolve: {
                     authentication: function(factoryAuthentication){
-                        factoryAuthentication.init();
                         console.log('Zaraz sprawdze i przekieruje z Dowolnego');
+                        factoryAuthentication.init('otherwise');
                     }
                 }
             });

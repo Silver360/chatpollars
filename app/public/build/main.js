@@ -19,8 +19,8 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
                 controller: 'login',
                 resolve: {
                     authentication: function(factoryAuthentication){
-                        factoryAuthentication.init();
                         console.log('Zaraz sprawdze i przekieruje z Login');
+                        factoryAuthentication.init('login');
                     }
                 }
             })
@@ -30,8 +30,8 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
                 controller: 'chat',
                 resolve: {
                     authentication: function(factoryAuthentication){
-                        factoryAuthentication.init();
-                        console.log('Zaraz sprawdze i przekieruje z Login');
+                        console.log('Zaraz sprawdze i przekieruje z Chat');
+                        factoryAuthentication.init('chat');
                     }
                 }
             })
@@ -39,8 +39,8 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
                 url: '*path',
                 resolve: {
                     authentication: function(factoryAuthentication){
-                        factoryAuthentication.init();
                         console.log('Zaraz sprawdze i przekieruje z Dowolnego');
+                        factoryAuthentication.init('otherwise');
                     }
                 }
             });
@@ -85,7 +85,7 @@ app.controller('login', ['$scope', 'serviceLogin', 'factoryAuthentication',  fun
     $scope.auth = {
         login: '',
         password: ''
-    };
+     };
 
     $scope.msg = '';
 
@@ -182,20 +182,47 @@ app.directive('validate', function () {
 
 var app = angular.module('dollars');
 
-app.factory('factoryAuthentication', ['socketio', '$state', '$location', function( socketio, $state, $location ){
+app.factory('factoryAuthentication', ['socketio', '$state', '$location', '$http', function( socketio, $state, $location, $http ){
 
     return {
-        init: function() {
+        init: function(state) {
             socketio.emit('authentication', $location.path());
             socketio.on('access:denied', function (data) {
-                console.log('go to login');
-                $state.go('login');
+                console.log('Url: ', $location.url());
+                if(state !== '/login') {
+                    console.log('go to login');
+                    $state.go('login');
+                }
             });
             socketio.on('access:go', function (data) {
-                console.log('go to chat');
-                $state.go('chat');
+                if(state !==  'chat') {
+                    console.log('go to chat', $location.url());
+                    $state.go('chat');
+                }
             });
         }
+        //init: function(state){
+        //    $http.get('/authentication')
+        //        .success(function (data){
+        //            console.log('Auth: ', data);
+        //            if(data === 'access:go'){
+        //                if(state !== 'chat'){
+        //                    console.log('go to chat', state);
+        //                    $state.go('chat');
+        //                }
+        //            } else {
+        //                console.log('Url: ', $location.url());
+        //                if($location.url() !== '/login'){
+        //                    console.log('go to login', $location.url());
+        //                    $state.go('login');
+        //                }
+        //
+        //            }
+        //        })
+        //        .error(function(err){
+        //           console.log('Error przy sprawdzaniu autoryzacji: ', err);
+        //        });
+        //}
     };
 
 }]);

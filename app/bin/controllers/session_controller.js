@@ -4,7 +4,6 @@ module.exports = {
 
     verificationSession: function(req){
         console.log('Sprawdzam Sesje :)');
-        console.log(req.session);
         if(req.session.user){
             console.log('Sesja Aktywna');
             return 'access';
