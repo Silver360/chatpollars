@@ -22,5 +22,9 @@ app.service('serviceLogin', ['socketio', '$rootScope', '$state', function( socke
         return error;
     };
 
+    this.signin = function(auth){
+        socketio.emit('signin', auth);
+    };
+
 
 }]);

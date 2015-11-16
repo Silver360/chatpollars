@@ -1,6 +1,6 @@
 
-var db = require('./db_controller.js');
 var Promise = require('bluebird');
+var session = require('./session_controller.js');
 
 module.exports = {
 
@@ -10,15 +10,20 @@ module.exports = {
     getMessages: function(){
         return this.messages;
     },
-    createMsg: function(msg) {
-        this.msg = [
-            this.shortId.generate(),
-            'Renio',
-            msg,
-            new Date()
-        ];
+    createMsg: function(msg, req) {
+        if(req.session.user){
+            this.msg = [
+                this.shortId.generate(),
+                req.session.user.login,
+                msg,
+                new Date()
+            ];
 
-        this.messages.push(this.msg);
-        return this.msg;
+            this.messages.push(this.msg);
+            return this.msg;
+        } else {
+            new Error('No user in session', { statusCode: 403 });
+        }
+
     }
 };

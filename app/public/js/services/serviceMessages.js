@@ -11,7 +11,7 @@ app.service('ServiceMessages', ['socketio', '$rootScope', function( socketio, $r
     });
 
     socketio.on('new:messages', function(data){
-            messages = data;
+            messages = data; console.log(data);
             $rootScope.$broadcast("new:message");
     });
 

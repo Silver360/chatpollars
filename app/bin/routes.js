@@ -22,6 +22,7 @@ module.exports = {
         this.authentication(this.app, this.sessionReq, this.io);
         this.findSession(this.app, this.io);
         this.requestHandler(this.app);
+        this.signin(this.io, this.userReq, this.sessionReq);
     },
     static: function(app){
         app.use( '/', this.express.static('./public') );
@@ -37,23 +38,22 @@ module.exports = {
             });
         });
     },
-    requestHandler: function(app){
-        app.get( '/chat', function(req, res){
-            res.redirect('/#/chat');
-        });
-
-        app.get( '/login', function(req, res){
-            res.redirect('/#/login');
-        });
-
-        app.get( '/prelogin', function(req, res){
-            res.redirect('/#/prelogin');
-        });
-    },
     login: function(io, userReq, sessionReq){
         io.sockets.on('connection', function(socket){
             socket.on('login', function(data){
                 userReq.login(data.login, data.password).then(function(data){
+                    sessionReq.createSession(socket.request, data);
+                    io.sockets.emit('login:res', 'access');
+                }).catch(function(e){
+                    io.sockets.emit('login:res', '' + e);
+                });
+            });
+        });
+    },
+    signin: function(io, userReq, sessionReq){
+        io.sockets.on('connection', function(socket){
+            socket.on('signin', function(data){
+                userReq.signin(data.login, data.password).then(function(data){
                     sessionReq.createSession(socket.request, data);
                     io.sockets.emit('login:res', 'access');
                 }).catch(function(e){
@@ -72,18 +72,6 @@ module.exports = {
         });
     },
     authentication: function(app, sessionReq, io){
-        app.get( '/*', function(req, res){
-            if(sessionReq.verificationSession(req) === 'access' ){
-                console.log('Acces wszystko w porzadeczku :) [REST]');
-                res.redirect('/');
-            } else if (sessionReq.verificationSession(req) === 'access-from-login') {
-                console.log('Access form Login [REST]');
-                res.redirect('/');
-            } else {
-                console.log('Jestes w niew��sciwym miejscu [REST]');
-                res.redirect('/');
-            }
-        });
 
         app.get( '/authentication', function(req, res){
             if(sessionReq.verificationSession(req) === 'access'){
@@ -94,10 +82,6 @@ module.exports = {
                 res.send('access:deneid')
             }
         });
-
-        //app.get( '/*', function(req, res){
-        //    res.redirect('/#/login');
-        //});
 
         io.sockets.on('connection', function(socket){
             socket.on('authentication', function(data) {
@@ -131,13 +115,28 @@ module.exports = {
                         io.sockets.emit('access:denied', false);
                     });
                 } else {
-                    io.sockets.emit('new:message', msgReq.createMsg(data));
+                    io.sockets.emit('new:message', msgReq.createMsg(data, socket.request));
                 }
             });
         });
+    },
+    requestHandler: function(app){
+        app.get( '/chat', function(req, res){
+            res.redirect('/#/chat');
+        });
+
+        app.get( '/login', function(req, res){
+            res.redirect('/#/login');
+        });
+
+        app.get( '/prelogin', function(req, res){
+            res.redirect('/#/prelogin');
+        });
+
+        app.all( '/*', function(req, res){
+            res.redirect('/');
+        });
     }
-
-
 
 
 };

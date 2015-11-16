@@ -19,8 +19,15 @@ module.exports = {
             }
         });
     },
-    signin: function(){
-        return db.saveUser(login, password);
+    signin: function(login, password){
+        return db.getUser(login).then(function(user) {
+            if(!user){
+                return db.saveUser(login, password);
+            } else {
+                throw new Erro('This user exist in db');
+            }
+        });
+
     }
 
 };

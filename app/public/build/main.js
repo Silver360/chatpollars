@@ -99,6 +99,7 @@ app.controller('login', ['$scope', 'serviceLogin', 'factoryAuthentication',  fun
 
     $scope.confirm = function(){
         $scope.msg = '';
+        serviceLogin.signin($scope.auth);
     }
 
 }]);
@@ -276,6 +277,10 @@ app.service('serviceLogin', ['socketio', '$rootScope', '$state', function( socke
         return error;
     };
 
+    this.signin = function(auth){
+        socketio.emit('signin', auth);
+    };
+
 
 }]);
 ;
@@ -291,7 +296,7 @@ app.service('ServiceMessages', ['socketio', '$rootScope', function( socketio, $r
     });
 
     socketio.on('new:messages', function(data){
-            messages = data;
+            messages = data; console.log(data);
             $rootScope.$broadcast("new:message");
     });
 

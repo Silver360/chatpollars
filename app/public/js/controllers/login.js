@@ -21,6 +21,7 @@ app.controller('login', ['$scope', 'serviceLogin', 'factoryAuthentication',  fun
 
     $scope.confirm = function(){
         $scope.msg = '';
+        serviceLogin.signin($scope.auth);
     }
 
 }]);
