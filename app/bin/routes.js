@@ -10,6 +10,7 @@ module.exports = {
     userReq: require('./controllers/users_controller.js'),
     msgReq: require('./controllers/messages_controller.js'),
     sessionReq: require('./controllers/session_controller.js'),
+    usersSocket: {},
     init: function(app, io){
         this.app = app;
         this.io = io;
@@ -72,37 +73,48 @@ module.exports = {
         });
     },
     authentication: function(app, sessionReq, io){
-
-        app.get( '/authentication', function(req, res){
-            if(sessionReq.verificationSession(req) === 'access'){
-                console.log('Acccess:go [REST]');
-                res.send('access:go');
+        app.post( '/authentication', function(req, res){
+            if (sessionReq.verificationSession(req) === 'access') {
+                console.log('Wszystko ok [REST]');
+                res.send({ res: 'access:go', user: { login: req.session.user.login, group: req.session.user.group } });
             } else {
-                console.log('Acccess:deneid [REST]');
-                res.send('access:deneid')
+                if(req.body.url == '/login' || req.body.url == '/prelogin') {
+                    console.log('Sesja nie jest aktywna ale mozesz tu byc :) [REST]');
+                } else {
+                    console.log('Jestes w niew��sciwym miejscu [REST]');
+                    res.send({ res: 'access:denied', user: null});
+                }
             }
         });
 
-        io.sockets.on('connection', function(socket){
-            socket.on('authentication', function(data) {
-                if (sessionReq.verificationSession(socket.request) === 'access') {
-                    console.log('Wszystko ok [SOCKETY]');
-                    io.sockets.emit('access:go', false);
-                } else {
-                    if(data == '/login' || data == '/prelogin') {
-                        console.log('Sesja nie jest aktywna ale mozesz tu byc :) [SOCKETY]');
-                    } else {
-                        console.log('Jestes w niew��sciwym miejscu [SOCKETY]');
-                        io.sockets.emit('access:denied', false);
-                    }
-                }
-            });
-        });
+        // Wersja pod Sockety
+
+        // io.sockets.on('connection', function(socket){
+        //     socket.on('authentication', function(data) {
+        //         if (sessionReq.verificationSession(socket.request) === 'access') {
+        //             console.log('Wszystko ok [SOCKETY]');
+        //             io.sockets.emit('access:go', false);
+        //         } else {
+        //             if(data == '/login' || data == '/prelogin') {
+        //                 console.log('Sesja nie jest aktywna ale mozesz tu byc :) [SOCKETY]');
+        //             } else {
+        //                 console.log('Jestes w niew��sciwym miejscu [SOCKETY]');
+        //                 io.sockets.emit('access:denied', false);
+        //             }
+        //         }
+        //     });
+        // });
     },
     messages: function(io, msgReq){
       io.sockets.on('connection', function(socket){
           socket.on('get:messages', function(data){
               io.sockets.emit('new:messages', msgReq.getMessages());
+          });
+
+          socket.on('delete:messages', function(data, callback){
+              msgReq.deleteMessage(data);
+              io.sockets.emit('new:messages', msgReq.getMessages());
+              console.log('Koniec usuwania');
           });
       });
     },

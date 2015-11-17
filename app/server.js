@@ -8,7 +8,9 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     cookieParser = require('cookie-parser');
 
-app.use(bodyParser.json({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 db.init(app, io).then(function(data){
 
     console.log(data);
@@ -20,7 +22,3 @@ db.init(app, io).then(function(data){
     });
 
 });
-
-
-
-

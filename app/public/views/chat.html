@@ -14,6 +14,10 @@
           <p>Dodal: {{ messages[1] }}</p>
           <p>Wiadomosc: {{ messages[2] }}<p>
           <p>Date: {{ messages[3] }}</p>
+          <button type="button" class="btn btn-default" aria-label="Left Align" ng-click="deleteMessage(messages[0])" ng-show="$last">
+              <span>X</span>
+          </button>
+          <button type="button" class="btn btn-danger">Ban</button>
       </div>
       <input ng-model="message" style="color: black;">
       <input type="button" ng-click="sendMessage(message)">

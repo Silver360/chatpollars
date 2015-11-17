@@ -25,5 +25,16 @@ module.exports = {
             new Error('No user in session', { statusCode: 403 });
         }
 
+    },
+    deleteMessage: function(user){
+        var nick = user[1],
+            key = user[0];
+
+        for(var i = 0; i < this.messages.length; i++){
+            if(this.messages[i].indexOf(key) !== -1){
+                this.messages.splice(i, 1);
+                console.log('Wiadomosc usunieta bez powrotnie :(');
+            }
+        }
     }
 };

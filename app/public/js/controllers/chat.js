@@ -12,7 +12,7 @@ app.controller('chat', ['$scope', '$state', 'ServiceMessages', function( $scope,
         ServiceMessages.getMessages();
     };
 
-    $scope.sendMessage = function (message){
+    $scope.sendMessage = function(message){
         ServiceMessages.sendMessage(message);
         $scope.message = '';
     };
@@ -20,6 +20,11 @@ app.controller('chat', ['$scope', '$state', 'ServiceMessages', function( $scope,
     $scope.$on('new:message', function(){
         $scope.msg = ServiceMessages.getMessage();
     });
+
+    $scope.deleteMessage = function(id){
+        ServiceMessages.deleteMessage(id);
+
+    }
 
     Init();
 
