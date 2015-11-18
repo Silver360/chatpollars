@@ -72,6 +72,13 @@ module.exports = {
 
         });
     },
+    banAccount: function(io, userReq, sessionReq){
+        io.sockets.on('connection', function(socket){
+            socket.on('ban:perma', function(data){
+                
+            });
+        });
+    },
     authentication: function(app, sessionReq, io){
         app.post( '/authentication', function(req, res){
             if (sessionReq.verificationSession(req) === 'access') {
@@ -112,9 +119,9 @@ module.exports = {
           });
 
           socket.on('delete:messages', function(data, callback){
-              msgReq.deleteMessage(data);
+              console.log(data);
+              msgReq.deleteMessage(data, socket.request);
               io.sockets.emit('new:messages', msgReq.getMessages());
-              console.log('Koniec usuwania');
           });
       });
     },

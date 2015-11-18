@@ -26,15 +26,24 @@ module.exports = {
         }
 
     },
-    deleteMessage: function(user){
-        var nick = user[1],
-            key = user[0];
+    deleteMessage: function(data, req){
+        var nick = data[1],
+            key = data[0],
+            messages = this.messages;
 
-        for(var i = 0; i < this.messages.length; i++){
-            if(this.messages[i].indexOf(key) !== -1){
-                this.messages.splice(i, 1);
-                console.log('Wiadomosc usunieta bez powrotnie :(');
+        if(req.session.user.login === nick || req.session.user.group === 'admin'){
+            console.log('Fist wall defens');
+            for(var i = 0; i < messages.length; i++){
+                if(key === messages[messages.length - 1][0] || req.session.user.group === 'admin'){
+                    console.log('Second Wall Defense');
+                    if(messages[i].indexOf(key) !== -1){
+                        messages.splice(i, 1);
+                        console.log('Wiadomosc usunieta bez powrotnie :(');
+                    }
+                }
             }
+        } else {
+            new Error('You have no permission for this', { statusCode: 403 });
         }
     }
 };

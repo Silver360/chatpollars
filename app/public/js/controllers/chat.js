@@ -2,7 +2,7 @@
 
 var app = angular.module('dollars');
 
-app.controller('chat', ['$scope', '$state', 'ServiceMessages', function( $scope, $state, ServiceMessages ) {
+app.controller('chat', ['$scope', '$state', 'ServiceMessages', 'factoryUser', function( $scope, $state, ServiceMessages, factoryUser ) {
 
     $scope.user = '';
     $scope.msg = {};
@@ -23,7 +23,10 @@ app.controller('chat', ['$scope', '$state', 'ServiceMessages', function( $scope,
 
     $scope.deleteMessage = function(id){
         ServiceMessages.deleteMessage(id);
+    }
 
+    $scope.banUser = function(user){
+        factoryUser.banUser(user);
     }
 
     Init();

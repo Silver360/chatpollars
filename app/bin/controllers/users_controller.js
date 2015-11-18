@@ -6,7 +6,6 @@ var session = require('./session_controller.js');
 module.exports = {
 
     login: function(login, password) {
-
         return db.getUser(login).then(function(user) {
             if (user) {
                 if (user.password === password) {
@@ -27,7 +26,19 @@ module.exports = {
                 throw new Erro('This user exist in db');
             }
         });
-
+    },
+    banAccount: function(user){
+        return db.getUser(login).then(function(user) {
+            if(user){
+                if(user.group !== 'admin'){
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                throw new Erro('This user not exist in db');
+            }
+        });
     }
 
 };

@@ -1,18 +1,20 @@
 
 var app = angular.module('dollars');
 
-app.factory('factoryUser', function(){
+app.factory('factoryUser', ['socketio', function(socketio){
 
     return {
         user: {},
         setUser: function(data){
-            console.log('User: ', data);
+            this.user = data;
         },
         getUser: function(){
-            console.log('Uzytkownik: ', this.user)
             return user;
+        },
+        banUser: function(user){
+            socketio.emit('ban:perma', user);
         }
 
     }
 
-});
+}]);

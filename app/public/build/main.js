@@ -53,7 +53,7 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
 
 var app = angular.module('dollars');
 
-app.controller('chat', ['$scope', '$state', 'ServiceMessages', function( $scope, $state, ServiceMessages ) {
+app.controller('chat', ['$scope', '$state', 'ServiceMessages', 'factoryUser', function( $scope, $state, ServiceMessages, factoryUser ) {
 
     $scope.user = '';
     $scope.msg = {};
@@ -74,7 +74,10 @@ app.controller('chat', ['$scope', '$state', 'ServiceMessages', function( $scope,
 
     $scope.deleteMessage = function(id){
         ServiceMessages.deleteMessage(id);
+    }
 
+    $scope.banUser = function(user){
+        factoryUser.banUser(user);
     }
 
     Init();
@@ -247,6 +250,26 @@ app.factory('socketio', function ($rootScope) {
 ;
 var app = angular.module('dollars');
 
+app.factory('factoryUser', ['socketio', function(socketio){
+
+    return {
+        user: {},
+        setUser: function(data){
+            this.user = data;
+        },
+        getUser: function(){
+            return user;
+        },
+        banUser: function(user){
+            socketio.emit('ban:perma', user);
+        }
+
+    }
+
+}]);
+;
+var app = angular.module('dollars');
+
 app.service('serviceLogin', ['socketio', '$rootScope', '$state', function( socketio, $rootScope, $state ){
 
     var error = {};
@@ -327,21 +350,3 @@ app.service('ServiceMessages', ['socketio', '$rootScope', function( socketio, $r
     }
 
 }]);
-;
-var app = angular.module('dollars');
-
-app.factory('factoryUser', function(){
-
-    return {
-        user: {},
-        setUser: function(data){
-            console.log('User: ', data);
-        },
-        getUser: function(){
-            console.log('Uzytkownik: ', this.user)
-            return user;
-        }
-
-    }
-
-});

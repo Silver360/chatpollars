@@ -10,14 +10,14 @@
     </ul> -->
     <div style="margin-top: 200px">
       <div ng-repeat="messages in msg">
-          <p ng-hide="true">{{ messages[0] }}</p>
+          <p ng-hide="false">{{ messages[0] }}</p>
           <p>Dodal: {{ messages[1] }}</p>
           <p>Wiadomosc: {{ messages[2] }}<p>
           <p>Date: {{ messages[3] }}</p>
-          <button type="button" class="btn btn-default" aria-label="Left Align" ng-click="deleteMessage(messages[0])" ng-show="$last">
+          <button type="button" class="btn btn-default" aria-label="Left Align" ng-click="deleteMessage(messages[0])">
               <span>X</span>
           </button>
-          <button type="button" class="btn btn-danger">Ban</button>
+          <button type="button" class="btn btn-danger" ng-click="banUser(messages[1])">Ban</button>
       </div>
       <input ng-model="message" style="color: black;">
       <input type="button" ng-click="sendMessage(message)">
