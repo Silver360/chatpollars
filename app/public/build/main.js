@@ -74,11 +74,11 @@ app.controller('chat', ['$scope', '$state', 'ServiceMessages', 'factoryUser', fu
 
     $scope.deleteMessage = function(id){
         ServiceMessages.deleteMessage(id);
-    }
+    };
 
     $scope.banUser = function(user){
         factoryUser.banUser(user);
-    }
+    };
 
     Init();
 
@@ -247,7 +247,8 @@ app.factory('socketio', function ($rootScope) {
         }
     };
 });
-;
+;/* global angular */
+
 var app = angular.module('dollars');
 
 app.factory('factoryUser', ['socketio', function(socketio){
@@ -258,13 +259,13 @@ app.factory('factoryUser', ['socketio', function(socketio){
             this.user = data;
         },
         getUser: function(){
-            return user;
+            return this.user;
         },
         banUser: function(user){
             socketio.emit('ban:perma', user);
         }
 
-    }
+    };
 
 }]);
 ;

@@ -1,3 +1,4 @@
+/* global angular */
 
 var app = angular.module('dollars');
 
@@ -9,12 +10,12 @@ app.factory('factoryUser', ['socketio', function(socketio){
             this.user = data;
         },
         getUser: function(){
-            return user;
+            return this.user;
         },
         banUser: function(user){
             socketio.emit('ban:perma', user);
         }
 
-    }
+    };
 
 }]);

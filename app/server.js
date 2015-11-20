@@ -22,3 +22,4 @@ db.init(app, io).then(function(data){
     });
 
 });
+

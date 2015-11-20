@@ -20,7 +20,7 @@ module.exports = {
     findSession: function(req, res){
         res.send(req.session);
     },
-    login: function(data, io, userReq, sessionReq){
+    login: function(data, io, userReq, sessionReq, socket){
         userReq.login(data.login, data.password).then(function(data){
             sessionReq.createSession(socket.request, data);
             io.sockets.emit('login:res', 'access');
@@ -28,7 +28,7 @@ module.exports = {
             io.sockets.emit('login:res', '' + e);
         });
     },
-    signin: function(data, io, userReq, sessionReq){
+    signin: function(data, io, userReq, sessionReq, socket){
         userReq.signin(data.login, data.password).then(function(data){
             sessionReq.createSession(socket.request, data);
             io.sockets.emit('login:res', 'access');
@@ -42,8 +42,14 @@ module.exports = {
             res.redirect('/');
         });
     },
-    banAccount: function(io, userReq, sessionReq){
-
+    banAccount: function(data, io, userReq, sessionReq, socket){
+		userReq.banAccount.searchBlackList('89789');
+		userReq.banAccount.ban(data, socket).then(function(data){
+			userReq.banAccount.blackList[data.ip] = data.login;
+		}).catch(function(e){
+			console.log('Err: ' + e);
+			io.sockets.emit('error:ban' + e);
+		});
     },
     authentication: function(req, res, sessionReq){
         if (sessionReq.verificationSession(req) === 'access') {
@@ -85,7 +91,7 @@ module.exports = {
             msgReq.deleteMessage(data, socket.request);
             io.sockets.emit('new:messages', msgReq.getMessages());
         },
-        sendMessage: function(data, io, msgReq, socket){
+        sendMessage: function(data, io, msgReq, sessionReq, socket){
             if(data === '/logout'){
                 sessionReq.destroySesssion(socket.request, function(){
                     console.log('Wylogowany');
@@ -104,45 +110,13 @@ module.exports = {
 
         app.get( '/logout', function(req, res){
             module.exports.logout(req, res, sessionReq);
-        });
+        }); 
 
         app.post( '/authentication', function(req, res){
             module.exports.authentication(req, res, sessionReq, io);
-        });
-
-        io.sockets.on('connection', function(socket){
-            socket.on('find', function(data){
-                io.sockets.emit('done', socket.request.session);
-            });
-
-            socket.on('login', function(data){
-                module.exports.login(data, io, userReq, sessionReq);
-            });
-
-            socket.on('signin', function(data){
-                module.exports.signin(data, io, userReq, sessionReq);
-            });
-
-            socket.on('ban:perma', function(data){
-                module.exports.banAccount(data, io, userReq, sessionReq);
-            });
-
-            socket.on('get:messages', function(data){
-                module.exports.messages.getMessages(data, io, msgReq);
-            });
-
-            socket.on('delete:messages', function(data, callback){
-                module.exports.messages.deleteMessage(data, io, msgReq, socket, callback);
-            });
-
-            socket.on('send:message', function(data){
-                module.exports.messages.sendMessage(data, io, msgReq, socket);
-            });
-
-
-        });
-
-        app.get( '/chat', function(req, res){
+        }); 
+		
+		app.get( '/chat', function(req, res){
             res.redirect('/#/chat');
         });
 
@@ -154,10 +128,42 @@ module.exports = {
             res.redirect('/#/prelogin');
         });
 
-        app.all( '/*', function(req, res){
+        app.get( '/*', function(req, res){
             res.redirect('/');
         });
+
+        io.sockets.on('connection', function(socket){
+            socket.on('find', function(data){
+                io.sockets.emit('done', socket.request.session);
+            });
+
+            socket.on('login', function(data){
+                module.exports.login(data, io, userReq, sessionReq, socket);
+            });
+
+            socket.on('signin', function(data){
+                module.exports.signin(data, io, userReq, sessionReq, socket);
+            });
+
+            socket.on('ban:perma', function(data){
+                module.exports.banAccount(data, io, userReq, sessionReq, socket);
+            });
+
+            socket.on('get:messages', function(data){
+                module.exports.messages.getMessages(data, io, msgReq);
+            });
+
+            socket.on('delete:messages', function(data, callback){
+                module.exports.messages.deleteMessage(data, io, msgReq, socket, callback);
+            });
+
+            socket.on('send:message', function(data){
+                module.exports.messages.sendMessage(data, io, msgReq, sessionReq, socket);
+            });
+
+
+        });
+        
     }
-
-
+    
 };

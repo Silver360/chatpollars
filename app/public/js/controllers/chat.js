@@ -23,11 +23,11 @@ app.controller('chat', ['$scope', '$state', 'ServiceMessages', 'factoryUser', fu
 
     $scope.deleteMessage = function(id){
         ServiceMessages.deleteMessage(id);
-    }
+    };
 
     $scope.banUser = function(user){
         factoryUser.banUser(user);
-    }
+    };
 
     Init();
 

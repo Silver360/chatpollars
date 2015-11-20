@@ -2,13 +2,14 @@
 
 //mongoose.disconnect();
 
-var session = require('express-session');
-var mongoStore = require('connect-mongo')({session: session});
-var mongoose = require('mongoose');
-var conn = mongoose.connect('mongodb://localhost/PollarsDb');
-var User = mongoose.model('User');
-var Message = mongoose.model('Message');
-var Promise = require('bluebird');
+var session = require('express-session'),
+	MongoStore = require('connect-mongo')({session: session}),
+	mongoose = require('mongoose'),
+	conn = mongoose.connect('mongodb://localhost/PollarsDb'),
+	User = mongoose.model('User'),
+	BlackList = mongoose.model('BlackList'),
+	Message = mongoose.model('Message'),
+	Promise = require('bluebird');
 
 module.exports = {
 
@@ -20,7 +21,7 @@ module.exports = {
                 } else {
                     var sessionMiddleware = session({
                         secret: 'LXNlc3Npb24gZGVwcmVjYXRlZCB1',
-                        store: new mongoStore({
+                        store: new MongoStore({
                             db: mongoose.connection.db,
                             collection: 'session'
                         }),
@@ -63,20 +64,24 @@ module.exports = {
                 } else {
                     resolve('U¿ytkownik zosta³ dodany do bazy');
                 }
-            })
-        });
-    },
-    getMsg: function(){
-        return new Promise(function(resolve, reject){
-            Message.find().limit(5).exec(function(err, messages){
-               if(!messages){
-                   reject(err);
-               } else {
-                    resolve(messages);
-               }
             });
         });
-    }
+    },
+    addToBlackList: function(login, ip){
+        return new Promise(function(resolve, reject){
+            var user = new BlackList();
+            user.set('login', login);
+            user.set('ip', ip);
+			user.set('date', new Date());
+            user.save(function(err){
+                if(err){
+                    reject(err);
+                } else {
+                    resolve( { login: login, ip: ip } );
+                }
+            });
+        });
+    }	
 
 };
 
