@@ -1,5 +1,5 @@
 
-//Przyk³ady róznych skryptów
+//Przykï¿½ady rï¿½znych skryptï¿½w
 
 db.addUser( { user: "testUser",    pwd: "test",    roles: [ "readWrite", "dbAdmin" ] } )
 
@@ -17,5 +17,7 @@ coll.find()
 coll.insert({ msg: 'Witam', timestamp: '2015-20-21', username: 'Ren' })
 
 
-//Wysy³anie na wszystkie sockety oprocz mnie
+//Wysyï¿½anie na wszystkie sockety oprocz mnie
 socket.boradcast.emit('new message', data);
+
+coll.remove({})

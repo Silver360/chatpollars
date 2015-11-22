@@ -13,13 +13,13 @@ app.factory('factoryAuthentication', ['socketio', '$state', '$location', '$http'
                         console.log('Url: ', $location.url());
                         if(state !== '/login') {
                             console.log('go to login');
-                            $state.go('login');
+                            $state.go('CtrlLogin');
                         }
                     } else if (data.res == 'access:go'){
-                        if(state !==  'chat') {
+                        if(state !==  'CtrlChat') {
                             console.log('go to chat', $location.url());
                             factoryUser.setUser(data.user);
-                            $state.go('chat');
+                            $state.go('CtrlChat');
                         }
                     } else {
                         console.log('Wydarzylo sie cos nie spodziewanego ', data)

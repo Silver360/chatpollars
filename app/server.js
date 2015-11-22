@@ -6,17 +6,20 @@ var express = require('express'),
     msg = require('./bin/models/messages.js'),
     db = require('./bin/controllers/db_controller.js'),
     bodyParser = require('body-parser'),
-    cookieParser = require('cookie-parser');
+    cookieParser = require('cookie-parser'),
+    cors = require('cors');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
+io.set('origins', '*:*');
 
 db.init(app, io).then(function(data){
 
     console.log(data);
     require('./bin/routes.js').init(app, io);
-    server.listen(4040);
 
+    server.listen(4040);
     server.listen(4040, function(){
         console.log('Nasluchuje na porcie ' + this.address().port);
     });

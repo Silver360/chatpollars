@@ -5,15 +5,9 @@ module.exports = {
     verificationSession: function(req){
         console.log('Sprawdzam Sesje :)');
         if(req.session.user){
-            console.log('Sesja Aktywna');
-            return 'access';
+            return true;
         } else {
-            if(req.path !== '/login') {
-                req.session.error = "Odmowa dostepu!";
-                return 'no-access';
-            } else {
-                return 'access-from-login';
-            }
+            return false;
         }
     },
     createSession: function(req, user){

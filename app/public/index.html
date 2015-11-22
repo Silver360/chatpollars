@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<htm>
+<html>
 <head>
     <title>Pollars</title>
     <link rel="stylesheet" type="text/css" href="build/style.css">
@@ -14,6 +14,13 @@
 
 <body ng-app="dollars">
     <div ui-view></div>
+     <div ng-controller="ctrlTerminal" id="terminal" class="col-xs-4">
+         <form class="row col-xs-12" novalidate>
+             <section class="col-xs-12">{{ output }}</section>
+             <input autofocus class="col-xs-12" ng-model="command" /><span id="cursor">_</span>
+             <button ng-show="false" ng-click="sendCommand()"></button>
+         </form>
+     </div>
     <script type="application/javascript" src="/socket.io/socket.io.js"></script>
 </body>
 </html>

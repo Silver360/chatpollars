@@ -11,27 +11,27 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
             .state('prelogin', {
                 url: '/prelogin',
                 templateUrl: 'views/prelogin.html',
-                controller: 'preLogin'
+                controller: 'ctrlPreLogin'
             })
-            .state('login', {
+            .state('CtrlLogin', {
                 url: '/login',
                 templateUrl: 'views/login.html',
-                controller: 'login',
+                controller: 'ctrlLogin',
                 resolve: {
                     authentication: function(factoryAuthentication){
                         console.log('Zaraz sprawdze i przekieruje z Login');
-                        factoryAuthentication.init('login');
+                        factoryAuthentication.init('CtrlLogin');
                     }
                 }
             })
-            .state('chat', {
+            .state('CtrlChat', {
                 url: '/chat',
                 templateUrl: 'views/chat.html',
-                controller: 'chat',
+                controller: 'ctrlChat',
                 resolve: {
                     authentication: function(factoryAuthentication){
                         console.log('Zaraz sprawdze i przekieruje z Chat');
-                        factoryAuthentication.init('chat');
+                        factoryAuthentication.init('CtrlChat');
                     }
                 }
             })
@@ -53,7 +53,7 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
 
 var app = angular.module('dollars');
 
-app.controller('chat', ['$scope', '$state', 'ServiceMessages', 'factoryUser', function( $scope, $state, ServiceMessages, factoryUser ) {
+app.controller('ctrlChat', ['$scope', '$state', 'ServiceMessages', 'factoryUser', function($scope, $state, ServiceMessages, factoryUser ) {
 
     $scope.user = '';
     $scope.msg = {};
@@ -88,7 +88,7 @@ app.controller('chat', ['$scope', '$state', 'ServiceMessages', 'factoryUser', fu
 
 var app = angular.module('dollars');
 
-app.controller('login', ['$scope', 'serviceLogin', 'factoryAuthentication',  function( $scope, serviceLogin, factoryAuthentication  ) {
+app.controller('ctrlLogin', ['$scope', 'serviceLogin', 'factoryAuthentication',  function($scope, serviceLogin, factoryAuthentication  ) {
 
     $scope.auth = {
         login: '',
@@ -114,7 +114,7 @@ app.controller('login', ['$scope', 'serviceLogin', 'factoryAuthentication',  fun
 ;
 var app = angular.module('dollars');
 
-app.controller('preLogin', ['$scope', '$state', 'factoryAuthentication', function( $scope, $state, factoryAuthentication ) {
+app.controller('ctrlPreLogin', ['$scope', '$state', 'factoryAuthentication', function($scope, $state, factoryAuthentication ) {
 
     $scope.appInit = function () {
 
@@ -128,12 +128,37 @@ app.controller('preLogin', ['$scope', '$state', 'factoryAuthentication', functio
         $scope.enter = function () {
 
             if ($scope.pass == 'srallop') {
-                $state.go('login');
+                $state.go('CtrlLogin');
             }
         }
     };
 
     $scope.appInit();
+
+}]);;
+var app = angular.module('dollars');
+
+app.controller('ctrlTerminal', ['$scope', '$state', 'logErrors', 'factoryCommand', function( $scope, $state, logErrors, factoryCommand ) {
+
+    $scope.command = '';
+    $scope.output = 'Jeśli chesz, otrzymać informacje o dostepnych komendach. Wpisz help';
+
+    $scope.sendCommand = function(){
+        factoryCommand.sendCommand($scope.command);
+        this.command = null;
+    };
+
+    $scope.$on('Error', function(){
+        $scope.output = logErrors.getError();
+    });
+
+    $scope.$on('blackList', function(data){ console.log(data);
+        for(var i in data){
+            $scope.output += '<br>' + data[i].login;
+        }
+    });
+
+
 
 }]);;
 var app = angular.module('dollars')
@@ -202,13 +227,13 @@ app.factory('factoryAuthentication', ['socketio', '$state', '$location', '$http'
                         console.log('Url: ', $location.url());
                         if(state !== '/login') {
                             console.log('go to login');
-                            $state.go('login');
+                            $state.go('CtrlLogin');
                         }
                     } else if (data.res == 'access:go'){
-                        if(state !==  'chat') {
+                        if(state !==  'CtrlChat') {
                             console.log('go to chat', $location.url());
                             factoryUser.setUser(data.user);
-                            $state.go('chat');
+                            $state.go('CtrlChat');
                         }
                     } else {
                         console.log('Wydarzylo sie cos nie spodziewanego ', data)
@@ -218,6 +243,39 @@ app.factory('factoryAuthentication', ['socketio', '$state', '$location', '$http'
                     console.log('Error przy autoryzacji: '. err)
                 });
         }
+    };
+
+}]);
+;
+
+var app = angular.module('dollars');
+
+app.factory('factoryCommand', ['socketio', '$rootScope', function( socketio, $rootScope ){
+
+    return {
+        sendCommand: function(command){
+            console.log('Comm: ', command);
+            socketio.emit('send:command', command, function(data){ console.log('Callback!!', data);
+                $rootScope.$broadcast("blackList", data);
+            });
+        }
+    };
+
+}]);
+;
+var app = angular.module('dollars');
+
+app.service('logErrors', ['socketio', '$rootScope', '$state', function( socketio, $rootScope, $state ){
+
+    var error = {};
+
+    socketio.on('Error', function(data){
+            error = data;
+            $rootScope.$broadcast("Error");
+    });
+
+    this.getError = function(){
+        return error;
     };
 
 }]);
@@ -277,7 +335,7 @@ app.service('serviceLogin', ['socketio', '$rootScope', '$state', function( socke
 
     socketio.on('login:res', function(data){
         if(data == 'access')
-            $state.go('chat');
+            $state.go('CtrlChat');
         else {
             error = data;
             $rootScope.$broadcast("login:erorr");

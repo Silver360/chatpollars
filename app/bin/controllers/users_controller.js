@@ -28,13 +28,33 @@ module.exports = {
         });
     },
     banAccount: {
-		blackList: {},
-		ban: function(login, req) {
-			return db.getUser(login).then(function(user) {
+		blackList: {
+			data: {},
+			searchBlackList: function(ip){
+				if(this.data[ip] === undefined){
+					return false;
+				} else {
+					return true;
+				}
+			},
+			update: function(){
+				return db.getBlackList().then(function(data){
+					return module.exports.banAccount.blackList.data = data;
+				});
+			},
+			getBlackList: function(){
+				return this.data;
+			},
+			removeFromBlackList: function(loginUser){
+				return db.removeFromBlackList(loginUser);
+			}
+		},
+		ban: function(loginUser, req) {
+			return db.getUser(loginUser).then(function(user) {
 				if(req.request.session.user.group == 'admin'){	
 					if(user){
 						if(user.group !== 'admin'){
-							return db.addToBlackList(login, req.handshake.address);
+							return db.addToBlackList(loginUser, req.handshake.address);
 						} else {
 							throw new Error('You can not ban your self or Admin user!! ', { statusCode: 404 });
 						}
@@ -46,13 +66,22 @@ module.exports = {
 				}
 			});
 		},
-		searchBlackList: function(ip){
-			if(this.blackList[ip] === undefined){
-				return false;
-			} else {
-				return this.blackList[ip];
-			}
+		unBand: function(loginUser) {
+			return this.blackList.update().then(function(data){
+				for(var i in data) {
+					console.log('i: ' + i + ' data: ', data );
+					if (data.hasOwnProperty(i)) {
+						if (data[i].login === loginUser) {
+							module.exports.banAccount.blackList.removeFromBlackList(loginUser);
+						} else{
+							throw new Error('This user was not ban before', { statusCode: 403 });
+						}
+					}
+
+				}
+			});
 		}
+
 				
     }
 

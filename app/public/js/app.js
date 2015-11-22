@@ -11,27 +11,27 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
             .state('prelogin', {
                 url: '/prelogin',
                 templateUrl: 'views/prelogin.html',
-                controller: 'preLogin'
+                controller: 'ctrlPreLogin'
             })
-            .state('login', {
+            .state('CtrlLogin', {
                 url: '/login',
                 templateUrl: 'views/login.html',
-                controller: 'login',
+                controller: 'ctrlLogin',
                 resolve: {
                     authentication: function(factoryAuthentication){
                         console.log('Zaraz sprawdze i przekieruje z Login');
-                        factoryAuthentication.init('login');
+                        factoryAuthentication.init('CtrlLogin');
                     }
                 }
             })
-            .state('chat', {
+            .state('CtrlChat', {
                 url: '/chat',
                 templateUrl: 'views/chat.html',
-                controller: 'chat',
+                controller: 'ctrlChat',
                 resolve: {
                     authentication: function(factoryAuthentication){
                         console.log('Zaraz sprawdze i przekieruje z Chat');
-                        factoryAuthentication.init('chat');
+                        factoryAuthentication.init('CtrlChat');
                     }
                 }
             })

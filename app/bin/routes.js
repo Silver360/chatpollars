@@ -17,12 +17,17 @@ module.exports = {
     static: function(app){
         app.use( '/', this.express.static('./public') );
     },
-    findSession: function(req, res){
-        res.send(req.session);
+    findSession: function(req, res, userReq){
+        userReq.banAccount.blackList.update().then(function(data){ console.log(data);
+            res.send( { session: req.session, Usoccket: data } );
+        }).catch(function(e){
+           console.log(e);
+        });
     },
     login: function(data, io, userReq, sessionReq, socket){
         userReq.login(data.login, data.password).then(function(data){
             sessionReq.createSession(socket.request, data);
+            module.exports.usersSocket[data.login] = socket.handshake.address;
             io.sockets.emit('login:res', 'access');
         }).catch(function(e){
             io.sockets.emit('login:res', '' + e);
@@ -42,17 +47,8 @@ module.exports = {
             res.redirect('/');
         });
     },
-    banAccount: function(data, io, userReq, sessionReq, socket){
-		userReq.banAccount.searchBlackList('89789');
-		userReq.banAccount.ban(data, socket).then(function(data){
-			userReq.banAccount.blackList[data.ip] = data.login;
-		}).catch(function(e){
-			console.log('Err: ' + e);
-			io.sockets.emit('error:ban' + e);
-		});
-    },
     authentication: function(req, res, sessionReq){
-        if (sessionReq.verificationSession(req) === 'access') {
+        if (sessionReq.verificationSession(req)) {
             console.log('Wszystko ok [REST]');
             res.send({ res: 'access:go', user: { login: req.session.user.login, group: req.session.user.group } });
         } else {
@@ -102,10 +98,31 @@ module.exports = {
             }
         }
     },
+    sendCommand: function(data, io, userReq, sessionReq, socket, callback){
+        if(data.split(' ')[0] === '/ban'){
+            console.log('Banujemy: '+ data.split(' ')[1]);
+            userReq.banAccount.ban(data.split(' ')[1], socket).then(function(){
+                userReq.banAccount.blackList.update().then(function(data){
+                }).catch(function(e){
+                    io.sockets.emit('Error', e);
+                })
+            }).catch(function(e){
+                io.sockets.emit('Error',  e);
+            });
+        } else if (data.split(' ')[0] === '/unban'){
+            userReq.banAccount.unBand(data.split(' ')[1]).then(function(data){
+            }).catch(function(e){
+               io.sockets.emit('Error',  e);
+            });
+        } else if (data.split(' ')[0] === '/showB'){ console.log('DhowDb');
+            callback(userReq.banAccount.blackList.getBlackList());
+        }
+
+    },
     requestHandler: function(app, io, userReq, msgReq, sessionReq){
 
         app.get( '/find', function(req, res){
-            module.exports.findSession(req, res);
+            module.exports.findSession(req, res, userReq);
         });
 
         app.get( '/logout', function(req, res){
@@ -137,7 +154,7 @@ module.exports = {
                 io.sockets.emit('done', socket.request.session);
             });
 
-            socket.on('login', function(data){
+            socket.on('login', function(data){ console.log('lgowanie');
                 module.exports.login(data, io, userReq, sessionReq, socket);
             });
 
@@ -145,20 +162,28 @@ module.exports = {
                 module.exports.signin(data, io, userReq, sessionReq, socket);
             });
 
-            socket.on('ban:perma', function(data){
-                module.exports.banAccount(data, io, userReq, sessionReq, socket);
-            });
-
             socket.on('get:messages', function(data){
-                module.exports.messages.getMessages(data, io, msgReq);
+                if(sessionReq.verificationSession(socket.request)) {
+                    module.exports.messages.getMessages(data, io, msgReq);
+                }
             });
 
             socket.on('delete:messages', function(data, callback){
-                module.exports.messages.deleteMessage(data, io, msgReq, socket, callback);
+                if(sessionReq.verificationSession(socket.request)) {
+                    module.exports.messages.deleteMessage(data, io, msgReq, socket, callback);
+                }
             });
 
             socket.on('send:message', function(data){
-                module.exports.messages.sendMessage(data, io, msgReq, sessionReq, socket);
+                if(sessionReq.verificationSession(socket.request)) {
+                    module.exports.messages.sendMessage(data, io, userReq, sessionReq, socket);
+                }
+            });
+
+            socket.on('send:command', function(data, callback){
+                if(socket.request.session.user.group === 'admin') {
+                    module.exports.sendCommand(data, io, userReq, sessionReq, socket, callback);
+                }
             });
 
 

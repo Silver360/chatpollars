@@ -55,25 +55,25 @@ module.exports = {
     saveUser: function(login, password){
         return new Promise(function(resolve, reject){
             var user = new User();
-            user.set('login', login);
+            user.set('CtrlLogin', login);
             user.set('password', password);
             user.set('group', 'user');
             user.save(function(err){
                 if(err){
                     reject(err);
                 } else {
-                    resolve('U¿ytkownik zosta³ dodany do bazy');
+                    resolve('Uï¿½ytkownik zostaï¿½ dodany do bazy');
                 }
             });
         });
     },
     addToBlackList: function(login, ip){
         return new Promise(function(resolve, reject){
-            var user = new BlackList();
-            user.set('login', login);
-            user.set('ip', ip);
-			user.set('date', new Date());
-            user.save(function(err){
+            var blacklist = new BlackList();
+            blacklist.set('login', login);
+            blacklist.set('ip', ip);
+            blacklist.set('date', new Date());
+            blacklist.save(function(err){
                 if(err){
                     reject(err);
                 } else {
@@ -81,7 +81,27 @@ module.exports = {
                 }
             });
         });
-    }	
+    },
+    getBlackList: function(){
+        return new Promise(function(resolve, reject){
+            BlackList.find().exec(function (err, user) {
+                if (err) {
+                    reject(err);
+                } else {
+                    if (!user) {
+                        resolve(false);
+                    } else {
+                        resolve(user);
+                    }
+                }
+            });
+        });
+    },
+    removeFromBlackList: function(loginUser){
+        return new Promise(function(resolve, reject){
+            BlackList.remove( { login: loginUser }, true );
+        });
+    }
 
 };
 

@@ -7,7 +7,7 @@ app.service('serviceLogin', ['socketio', '$rootScope', '$state', function( socke
 
     socketio.on('login:res', function(data){
         if(data == 'access')
-            $state.go('chat');
+            $state.go('CtrlChat');
         else {
             error = data;
             $rootScope.$broadcast("login:erorr");

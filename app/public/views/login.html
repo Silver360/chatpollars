@@ -1,7 +1,7 @@
 
 <section id="login" class="container">
 
-    <form>
+    <form novalidate>
         <div class="row">
             <label class="col-sm-5">Login: </label>
             <div class="col-sm-7 input"><input ng-model="auth.login" onfocus="true"></div>
@@ -12,7 +12,7 @@
             <div id="msg">{{ msg }}</div>
         </div>
         <div id="confirm">
-            <div class="button" ng-click="login()"><p>Login</p></div>
+            <button ng-show="false" class="button" ng-click="login()"><p>Login</p></button>
         </div>
     </form>
 
@@ -20,7 +20,5 @@
         <h2>Podanego uzytkownika nie ma w bazie danych, czy utworzyc nwoego?</h2>
         <div class="button btn btn-primary" ng-click="confirm()" ><p>Zatwierdz</p></div>
     </div>
-
-
 
 </section>
