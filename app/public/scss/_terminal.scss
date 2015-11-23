@@ -1,0 +1,49 @@
+
+@-webkit-keyframes cursor {
+  0%   {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+@keyframes cursor {
+  0%   {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+#terminal{
+  background-color: black;
+  border: solid white 4px;
+  position: absolute;
+  bottom: 0px;
+  right: 100px;
+  height: 250px;
+
+  form{
+    height: 100%;
+    position: relative;
+    padding: 20px;
+
+    section{
+
+    }
+
+    input{
+      background: black;
+      color: white;
+      border: none;
+
+      &:focus{
+        border: none;
+        outline: 0px;
+      }
+    }
+
+    span#cursor{
+      display: none;
+      opacity: 1;
+      -webkit-animation: cursor 0.5s infinite; /* Chrome, Safari, Opera */
+      animation: cursor 0.5s infinite;
+    }
+
+  }
+
+}
