@@ -2,9 +2,10 @@
 
 var myApp = angular.module('dollars', [
     'ui.router',
-]);
+	'ngAnimate'
+])
 
-myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
+.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
     function ($urlRouterProvider, $stateProvider, $locationProvider) {
 
         $stateProvider
@@ -48,4 +49,17 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
             $locationProvider.html5Mode(true);
 
     }
-]);
+])
+
+.animation('.ngAnimate', function(){
+	return {
+		enter: function(element, done){ console.log('Element: ', element);
+			element.find('.right').css({
+				opacity: 0
+			})
+			.animate({
+				opacity: 1
+			}, 2000, done);
+		}
+	};
+});

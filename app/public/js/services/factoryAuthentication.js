@@ -8,7 +8,7 @@ app.factory('factoryAuthentication', ['socketio', '$state', '$location', '$http'
         init: function(state) {
             $http.post('/authentication', { url: $location.url() })
                 .success(function (data){
-                    console.log('Autoryzacja');
+                    console.log('Autoryzacja', data.res);
                     if(data.res == 'access:denied'){
                         console.log('Url: ', $location.url());
                         if(state !== '/login') {
@@ -20,13 +20,15 @@ app.factory('factoryAuthentication', ['socketio', '$state', '$location', '$http'
                             console.log('go to chat', $location.url());
                             factoryUser.setUser(data.user);
                             $state.go('CtrlChat');
-                        }
+                        } else {
+							factoryUser.setUser(data.user);
+						}
                     } else {
-                        console.log('Wydarzylo sie cos nie spodziewanego ', data)
+                        console.log('Wydarzylo sie cos nie spodziewanego ', data);
                     }
                 })
                 .error(function(err){
-                    console.log('Error przy autoryzacji: '. err)
+                    console.log('Error przy autoryzacji: '. err);
                 });
         }
     };

@@ -22,6 +22,6 @@ app.controller('ctrlLogin', ['$scope', 'serviceLogin', 'factoryAuthentication', 
     $scope.confirm = function(){
         $scope.msg = '';
         serviceLogin.signin($scope.auth);
-    }
+    };
 
 }]);

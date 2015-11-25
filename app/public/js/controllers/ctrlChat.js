@@ -1,20 +1,18 @@
 
-
 var app = angular.module('dollars');
 
 app.controller('ctrlChat', ['$scope', '$state', 'ServiceMessages', 'factoryUser', function($scope, $state, ServiceMessages, factoryUser ) {
 
-    $scope.user = '';
+    $scope.user = factoryUser.getUser();
     $scope.msg = {};
 
     var Init = function(){
-
         ServiceMessages.getMessages();
     };
 
     $scope.sendMessage = function(message){
         ServiceMessages.sendMessage(message);
-        $scope.message = '';
+        $scope.message = null;
     };
 
     $scope.$on('new:message', function(){

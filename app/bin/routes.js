@@ -28,7 +28,7 @@ module.exports = {
         userReq.login(data.login, data.password).then(function(data){
             sessionReq.createSession(socket.request, data);
             module.exports.usersSocket[data.login] = socket.handshake.address;
-            io.sockets.emit('login:res', 'access');
+            io.sockets.emit('login:res', { res: 'access', user: { login: socket.request.session.req.session.user.login, group: socket.request.session.req.session.user.group } } );
         }).catch(function(e){
             io.sockets.emit('login:res', '' + e);
         });
@@ -105,7 +105,7 @@ module.exports = {
                 userReq.banAccount.blackList.update().then(function(data){
                 }).catch(function(e){
                     io.sockets.emit('Error', e);
-                })
+                });
             }).catch(function(e){
                 io.sockets.emit('Error',  e);
             });
@@ -137,9 +137,9 @@ module.exports = {
             res.redirect('/#/chat');
         });
 
-        app.get( '/login', function(req, res){
-            res.redirect('/#/login');
-        });
+        // app.get( '/login', function(req, res){
+        //     res.redirect('/#/login');
+        // });
 
         app.get( '/prelogin', function(req, res){
             res.redirect('/#/prelogin');
@@ -154,13 +154,13 @@ module.exports = {
                 io.sockets.emit('done', socket.request.session);
             });
 
-            socket.on('login', function(data){ console.log('lgowanie');
-                module.exports.login(data, io, userReq, sessionReq, socket);
-            });
+            // socket.on('login', function(data){ console.log('lgowanie');
+            //     module.exports.login(data, io, userReq, sessionReq, socket);
+            // });
 
-            socket.on('signin', function(data){
-                module.exports.signin(data, io, userReq, sessionReq, socket);
-            });
+            // socket.on('signin', function(data){
+            //     module.exports.signin(data, io, userReq, sessionReq, socket);
+            // });
 
             socket.on('get:messages', function(data){
                 if(sessionReq.verificationSession(socket.request)) {
@@ -176,7 +176,7 @@ module.exports = {
 
             socket.on('send:message', function(data){
                 if(sessionReq.verificationSession(socket.request)) {
-                    module.exports.messages.sendMessage(data, io, userReq, sessionReq, socket);
+                    module.exports.messages.sendMessage(data, io, msgReq, sessionReq, socket);
                 }
             });
 

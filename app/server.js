@@ -19,7 +19,6 @@ db.init(app, io).then(function(data){
     console.log(data);
     require('./bin/routes.js').init(app, io);
 
-    server.listen(4040);
     server.listen(4040, function(){
         console.log('Nasluchuje na porcie ' + this.address().port);
     });

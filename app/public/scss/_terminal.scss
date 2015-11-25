@@ -12,7 +12,8 @@
 #terminal{
   background-color: black;
   border: solid white 4px;
-  position: absolute;
+  border-bottom: none;
+  position: fixed;
   bottom: 0px;
   right: 100px;
   height: 250px;

@@ -2,9 +2,10 @@
 
 var myApp = angular.module('dollars', [
     'ui.router',
-]);
+	'ngAnimate'
+])
 
-myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
+.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
     function ($urlRouterProvider, $stateProvider, $locationProvider) {
 
         $stateProvider
@@ -48,24 +49,35 @@ myApp.config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
             $locationProvider.html5Mode(true);
 
     }
-]);
-;
+])
 
+.animation('.ngAnimate', function(){
+	return {
+		enter: function(element, done){ console.log('Element: ', element);
+			element.find('.right').css({
+				opacity: 0
+			})
+			.animate({
+				opacity: 1
+			}, 2000, done);
+		}
+	};
+});
+;
 var app = angular.module('dollars');
 
 app.controller('ctrlChat', ['$scope', '$state', 'ServiceMessages', 'factoryUser', function($scope, $state, ServiceMessages, factoryUser ) {
 
-    $scope.user = '';
+    $scope.user = factoryUser.getUser();
     $scope.msg = {};
 
     var Init = function(){
-
         ServiceMessages.getMessages();
     };
 
     $scope.sendMessage = function(message){
         ServiceMessages.sendMessage(message);
-        $scope.message = '';
+        $scope.message = null;
     };
 
     $scope.$on('new:message', function(){
@@ -108,7 +120,7 @@ app.controller('ctrlLogin', ['$scope', 'serviceLogin', 'factoryAuthentication', 
     $scope.confirm = function(){
         $scope.msg = '';
         serviceLogin.signin($scope.auth);
-    }
+    };
 
 }]);
 ;
@@ -161,7 +173,7 @@ app.controller('ctrlTerminal', ['$scope', '$state', 'logErrors', 'factoryCommand
 
 
 }]);;
-var app = angular.module('dollars')
+var app = angular.module('dollars');
 
 app.directive('back', function ($state) {
 
@@ -171,7 +183,7 @@ app.directive('back', function ($state) {
 
             stateChat();
 
-        })
+        });
 
     }
 
@@ -182,7 +194,7 @@ app.directive('back', function ($state) {
     return{
         restrict: 'A',
         link: link
-    }
+    };
 
 });
 
@@ -202,17 +214,67 @@ app.directive('validate', function () {
                 audio1[0].play();
             });
 
-        })
+        });
 
     }
 
     return{
         restrict: 'A',
         link: link
+    };
+
+});
+
+app.directive('enterSend', function () {
+
+    function link(scope, element, attrs) {
+		
+		element.keypress(function(e){
+			if(e.which === 13 & event.shiftKey){
+				return element;
+			}
+			if(e.which === 13){
+				scope.$apply(function (){
+					scope.$eval(attrs.enterSend);
+				});
+			}
+		});
+
     }
+
+    return{
+        restrict: 'A',
+        link: link
+    };
+
+});
+
+app.directive('focus', function () {
+
+    function link(scope, element, attrs) {
+		element.click(function(){
+			console.log('focus ^ ^');
+			element.find('input').focus();
+		});
+		
+
+    }
+
+    return{
+        restrict: 'A',
+        link: link
+    };
 
 });
 ;
+var app = angular.module('dollars');
+
+app.filter('reverse', function() {
+	return function(items) {
+		if(Object.prototype.toString.call( items ) !== '[object Array]') return items;
+		return items.slice().reverse();
+	};
+});;
 
 var app = angular.module('dollars');
 
@@ -222,7 +284,7 @@ app.factory('factoryAuthentication', ['socketio', '$state', '$location', '$http'
         init: function(state) {
             $http.post('/authentication', { url: $location.url() })
                 .success(function (data){
-                    console.log('Autoryzacja');
+                    console.log('Autoryzacja', data.res);
                     if(data.res == 'access:denied'){
                         console.log('Url: ', $location.url());
                         if(state !== '/login') {
@@ -234,13 +296,15 @@ app.factory('factoryAuthentication', ['socketio', '$state', '$location', '$http'
                             console.log('go to chat', $location.url());
                             factoryUser.setUser(data.user);
                             $state.go('CtrlChat');
-                        }
+                        } else {
+							factoryUser.setUser(data.user);
+						}
                     } else {
-                        console.log('Wydarzylo sie cos nie spodziewanego ', data)
+                        console.log('Wydarzylo sie cos nie spodziewanego ', data);
                     }
                 })
                 .error(function(err){
-                    console.log('Error przy autoryzacji: '. err)
+                    console.log('Error przy autoryzacji: '. err);
                 });
         }
     };
@@ -329,13 +393,15 @@ app.factory('factoryUser', ['socketio', function(socketio){
 ;
 var app = angular.module('dollars');
 
-app.service('serviceLogin', ['socketio', '$rootScope', '$state', function( socketio, $rootScope, $state ){
+app.service('serviceLogin', ['socketio', '$rootScope', '$state', 'factoryUser', function( socketio, $rootScope, $state, factoryUser ){
 
     var error = {};
 
     socketio.on('login:res', function(data){
-        if(data == 'access')
+        if(data.res == 'access'){
+			factoryUser.setUser(data.user);
             $state.go('CtrlChat');
+		}
         else {
             error = data;
             $rootScope.$broadcast("login:erorr");

@@ -1,25 +1,24 @@
 
-<section id="chat" class="container">
-    <!-- <ul class="col-sm-12">
-        <li>
-            <div class="col">
-                <p>{{user.name}}</p>
-            </div>
-            <p class="msg">{{msg.value}}</p>
-        </li>
-    </ul> -->
-    <div style="margin-top: 200px">
-      <div ng-repeat="messages in msg">
-          <p ng-hide="false">{{ messages[0] }}</p>
-          <p>Dodal: {{ messages[1] }}</p>
-          <p>Wiadomosc: {{ messages[2] }}<p>
-          <p>Date: {{ messages[3] }}</p>
-          <button type="button" class="btn btn-default" aria-label="Left Align" ng-click="deleteMessage(messages[0])">
-              <span>X</span>
-          </button>
-          <button type="button" class="btn btn-danger" ng-click="banUser(messages[1])">Ban</button>
-      </div>
-      <input ng-model="message" style="color: black;">
-      <input type="button" ng-click="sendMessage(message)">
-    </div>
+<section id="chat">
+	<div class="top container">
+		<div class="content container">
+			<textarea ng-model="message" enter-send="sendMessage(message)" ></textarea>
+			<button ng-show="false" type="button" ng-click="sendMessage(message)">
+		</div>
+	</div>
+	<section class="container">
+		<div class="row ngAnimate" ng-repeat="messages in msg | reverse">
+			<div class="col-xs-12">
+				<div class="left col-xs-2">
+					<img src="img/avatar1.png" />
+					<p class="nick">{{ messages[1] }}</p>
+				</div>
+				<div class="right  col-xs-10">
+					<div class="content">
+						<p class="message">{{ messages[2] }}</p>
+					</div>
+				</div>
+			</div>
+		</div> 
+	<div ng-include="'views/terminal.html'" ng-show="user.group == 'admin'"></div>	
 </section>
