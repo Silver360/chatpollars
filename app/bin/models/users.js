@@ -4,7 +4,8 @@ var mongoose = require('mongoose'),
  	UserSchema =  new Schema({
 		login: { type: String, unique: true },
 		password: String,
-		group: String
+		group: String,
+		avatar: { url: String, color: String}
 	}),
 	BlackList = new Schema({
 		ip: { type: String, unique: true },	

@@ -1,25 +1,16 @@
 
 var app = angular.module('dollars');
 
-app.controller('ctrlPreLogin', ['$scope', '$state', 'factoryAuthentication', function($scope, $state, factoryAuthentication ) {
-
-    $scope.appInit = function () {
-
-
-    };
+app.controller('ctrlPreLogin', ['$scope', '$state', 'serviceLogin', function($scope, $state, serviceLogin ) {
 
     $scope.testPass = function () {
 
         $scope.pass = null;
 
         $scope.enter = function () {
-
-            if ($scope.pass == 'srallop') {
-                $state.go('CtrlLogin');
-            }
+            serviceLogin.login($scope.pass);
         }
     };
 
-    $scope.appInit();
 
 }]);
