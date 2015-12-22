@@ -21,3 +21,4 @@ coll.insert({ msg: 'Witam', timestamp: '2015-20-21', username: 'Ren' })
 socket.boradcast.emit('new message', data);
 
 coll.remove({})
+

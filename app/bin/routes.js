@@ -9,8 +9,8 @@ module.exports = {
     msgReq: require('./controllers/messages_controller.js'),
     sessionReq: require('./controllers/session_controller.js'),
     usersSocket: {},
+    usersInChat: {},
     init: function(app, io){
-
         this.static(app);
         this.requestHandler(app, io, this.userReq, this.msgReq, this.sessionReq);
     },
@@ -23,6 +23,18 @@ module.exports = {
         }).catch(function(e){
            console.log(e);
         });
+    },
+    addUser: function(data, io, sessionReq, socket, callback){
+        this.usersInChat[data.login] = data;
+        this.usersSocket[data.login] = socket;
+        sessionReq.createSession(socket.request, data);
+        callback( { res: 'access', user: { login: socket.request.session.req.session.user.login, group: socket.request.session.req.session.user.group } } );
+        io.sokets.emit('users:change', Obejct.size(this.usersInChat));
+    },
+    removeUser: function(data, io, sessionReq, socket){
+        delete this.usersInChat[data.login];
+        io.sokets.emit('users:change', Obejct.size(this.usersInChat));
+
     },
     login: function(data, io, userReq, sessionReq, socket){
         userReq.login(data.login, data.password).then(function(data){
@@ -52,7 +64,7 @@ module.exports = {
             console.log('Wszystko ok [REST]');
             res.send({ res: 'access:go', user: { login: req.session.user.login, group: req.session.user.group } });
         } else {
-            if(req.body.url == '/login' || req.body.url == '/prelogin') {
+            if(req.body.url == '/prelogin') {
                 console.log('Sesja nie jest aktywna ale mozesz tu byc :) [REST]');
             } else {
                 console.log('Jestes w niew��sciwym miejscu [REST]');
@@ -191,4 +203,12 @@ module.exports = {
         
     }
     
+};
+
+Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
 };
