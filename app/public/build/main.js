@@ -51,18 +51,18 @@ var myApp = angular.module('dollars', [
     }
 ])
 
-.animation('.ngAnimate', function(){
-	return {
-		enter: function(element, done){ console.log('Element: ', element);
-			element.find('.right').css({
-				opacity: 0
-			})
-			.animate({
-				opacity: 1
-			}, 2000, done);
-		}
-	};
-});
+//.animation('.ngAnimate', function(){
+//	return {
+//		enter: function(element, done){ console.log('Element: ', element);
+//			element.find('.right').css({
+//				transform: 'scale(0.1)'
+//			})
+//			.animate({
+//                transform: 'scale(1)'
+//			}, 2000, done);
+//		}
+//	};
+//});
 ;
 var app = angular.module('dollars');
 
@@ -76,8 +76,10 @@ app.controller('ctrlChat', ['$scope', '$state', 'ServiceMessages', 'factoryUser'
     };
 
     $scope.sendMessage = function(message){
-        ServiceMessages.sendMessage(message);
-        $scope.message = null;
+        if(message != '' && message != undefined) { console.log('Msg: ', message);
+            ServiceMessages.sendMessage(message);
+            $scope.message = '';
+        }
     };
 
     $scope.$on('new:message', function(){
@@ -100,7 +102,7 @@ app.controller('ctrlChat', ['$scope', '$state', 'ServiceMessages', 'factoryUser'
 
 var app = angular.module('dollars');
 
-app.controller('ctrlLogin', ['$scope', 'serviceLogin', 'factoryAuthentication',  function($scope, serviceLogin, factoryAuthentication  ) {
+app.controller('ctrlLogin', ['$scope', 'serviceLogin', 'factoryAuthentication', 'logErrors',  function($scope, serviceLogin, factoryAuthentication, logErrors  ) {
 
     $scope.auth = {
         login: '',
@@ -122,30 +124,34 @@ app.controller('ctrlLogin', ['$scope', 'serviceLogin', 'factoryAuthentication', 
         serviceLogin.signin($scope.auth);
     };
 
+    $scope.cancel = function(){
+        $scope.msg = '';
+        $scope.auth = { login: '', password: '' };
+    }
+
 }]);
 ;
 var app = angular.module('dollars');
 
-app.controller('ctrlPreLogin', ['$scope', '$state', 'factoryAuthentication', function($scope, $state, factoryAuthentication ) {
+app.controller('ctrlPreLogin', ['$scope', '$state', 'serviceLogin', function($scope, $state, serviceLogin ) {
 
-    $scope.appInit = function () {
-
-
-    };
-
+<<<<<<< HEAD
     $scope.testPass = function () {
 
         $scope.pass = null;
 
         $scope.enter = function () {
-
-            if ($scope.pass == 'srallop') {
-                $state.go('CtrlChat');
-            }
+            serviceLogin.login($scope.pass);
         }
     };
+=======
+	$scope.pass = null;
 
-    $scope.appInit();
+	$scope.enter = function () {
+		serviceLogin.login($scope.pass);
+	};
+>>>>>>> 8b6681eba49a86a35481c72eb548132753b2a00d
+
 
 }]);;
 var app = angular.module('dollars');
@@ -211,7 +217,7 @@ app.directive('validate', function () {
             audio2[0].play();
 
             audio2.bind('ended', function(){
-                audio1[0].play();
+                //audio1[0].play();
             });
 
         });
@@ -234,6 +240,7 @@ app.directive('enterSend', function () {
 				return element;
 			}
 			if(e.which === 13){
+                e.preventDefault();
 				scope.$apply(function (){
 					scope.$eval(attrs.enterSend);
 				});
@@ -256,7 +263,6 @@ app.directive('focus', function () {
 			console.log('focus ^ ^');
 			element.find('input').focus();
 		});
-		
 
     }
 
@@ -266,6 +272,8 @@ app.directive('focus', function () {
     };
 
 });
+
+
 ;
 var app = angular.module('dollars');
 
@@ -289,7 +297,7 @@ app.factory('factoryAuthentication', ['socketio', '$state', '$location', '$http'
                         console.log('Url: ', $location.url());
                         if(state !== '/login') {
                             console.log('go to login');
-                            $state.go('CtrlLogin');
+                            $state.go('prelogin');
                         }
                     } else if (data.res == 'access:go'){
                         if(state !==  'CtrlChat') {
@@ -334,8 +342,8 @@ app.service('logErrors', ['socketio', '$rootScope', '$state', function( socketio
     var error = {};
 
     socketio.on('Error', function(data){
-            error = data;
-            $rootScope.$broadcast("Error");
+        error = data;
+        $rootScope.$broadcast("Error");
     });
 
     this.getError = function(){
@@ -347,7 +355,7 @@ app.service('logErrors', ['socketio', '$rootScope', '$state', function( socketio
 var app = angular.module('dollars');
 
 app.factory('socketio', function ($rootScope) {
-    var socket = io.connect('http://localhost:4040');
+    var socket = io.connect('http://pollars.ren.net.pl:4040');
     return {
         on: function (eventName, callback) {
             socket.on(eventName, function () {
@@ -365,7 +373,7 @@ app.factory('socketio', function ($rootScope) {
                         callback.apply(socket, args);
                     }
                 });
-            })
+            });
         }
     };
 });
@@ -398,7 +406,7 @@ app.service('serviceLogin', ['socketio', '$rootScope', '$state', 'factoryUser', 
     var error = {};
 
     this.login = function (auth){
-        socketio.emit('login', auth, function(){
+        socketio.emit('login', auth, function(data){
             if(data.res == 'access'){
                 factoryUser.setUser(data.user);
                 $state.go('CtrlChat');
@@ -415,9 +423,17 @@ app.service('serviceLogin', ['socketio', '$rootScope', '$state', 'factoryUser', 
     };
 
     this.signin = function(auth){
-        socketio.emit('signin', auth);
+        socketio.emit('signin', auth, function(data){
+            if(data.res == 'access'){ console.log('data: ', data);
+                factoryUser.setUser(data.user);
+                $state.go('CtrlChat');
+            }
+            else {
+                error = data;
+                $rootScope.$broadcast("login:erorr");
+            }
+        });
     };
-
 
 }]);
 ;
@@ -445,8 +461,11 @@ app.service('ServiceMessages', ['socketio', '$rootScope', function( socketio, $r
         return messages;
     };
 
-    this.getMessages = function() {
-        socketio.emit('get:messages');
+    this.getMessages = function() { console.log('Hello');
+        socketio.emit('get:messages', 'renio', function(data){
+            messages = data;
+            $rootScope.$broadcast("new:message");
+        });
     };
 
     this.deleteMessage = function(user) {
@@ -454,7 +473,7 @@ app.service('ServiceMessages', ['socketio', '$rootScope', function( socketio, $r
         socketio.emit('delete:messages', findKey(messages, user), function(){
 
         });
-    }
+    };
 
     Object.size = function(obj) {
         var size = 0, key;

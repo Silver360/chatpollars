@@ -18,7 +18,11 @@ section#login{
       border-radius: 10px;
       padding: 80px;
       animation-name: fadeIn;
-      animation-duration: 4s;
+      animation-duration: 0.2s;
+
+      p{
+        margin: 0px;
+      }
   }
 
   form{

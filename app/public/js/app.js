@@ -51,15 +51,15 @@ var myApp = angular.module('dollars', [
     }
 ])
 
-.animation('.ngAnimate', function(){
-	return {
-		enter: function(element, done){ console.log('Element: ', element);
-			element.find('.right').css({
-				opacity: 0
-			})
-			.animate({
-				opacity: 1
-			}, 2000, done);
-		}
-	};
-});
+//.animation('.ngAnimate', function(){
+//	return {
+//		enter: function(element, done){ console.log('Element: ', element);
+//			element.find('.right').css({
+//				transform: 'scale(0.1)'
+//			})
+//			.animate({
+//                transform: 'scale(1)'
+//			}, 2000, done);
+//		}
+//	};
+//});

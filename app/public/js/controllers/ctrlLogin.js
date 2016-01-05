@@ -2,7 +2,7 @@
 
 var app = angular.module('dollars');
 
-app.controller('ctrlLogin', ['$scope', 'serviceLogin', 'factoryAuthentication',  function($scope, serviceLogin, factoryAuthentication  ) {
+app.controller('ctrlLogin', ['$scope', 'serviceLogin', 'factoryAuthentication', 'logErrors',  function($scope, serviceLogin, factoryAuthentication, logErrors  ) {
 
     $scope.auth = {
         login: '',
@@ -23,5 +23,10 @@ app.controller('ctrlLogin', ['$scope', 'serviceLogin', 'factoryAuthentication', 
         $scope.msg = '';
         serviceLogin.signin($scope.auth);
     };
+
+    $scope.cancel = function(){
+        $scope.msg = '';
+        $scope.auth = { login: '', password: '' };
+    }
 
 }]);

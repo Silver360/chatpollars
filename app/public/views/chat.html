@@ -1,24 +1,29 @@
 
 <section id="chat">
 	<div class="top container">
-		<div class="content container">
-			<textarea ng-model="message" enter-send="sendMessage(message)" ></textarea>
-			<button ng-show="false" type="button" ng-click="sendMessage(message)">
-		</div>
+		<form class="content container" enter-send="sendMessage(message)">
+			<textarea ng-model="message" autofocus></textarea>
+			<button ng-show="false" type="submit" />
+		</form>
 	</div>
 	<section class="container">
 		<div class="row ngAnimate" ng-repeat="messages in msg | reverse">
 			<div class="col-xs-12">
 				<div class="left col-xs-2">
-					<img src="img/avatar1.png" />
+<<<<<<< HEAD
+					<img src="img/{{ messages[4] }}" />
+=======
+					<img src="img/avatar2.png" />
+>>>>>>> 8b6681eba49a86a35481c72eb548132753b2a00d
 					<p class="nick">{{ messages[1] }}</p>
 				</div>
-				<div class="right  col-xs-10">
-					<div class="content">
+				<div class="right col-xs-10">
+					<div class="content" style="background-color: {{ messages[5] }};">
 						<p class="message">{{ messages[2] }}</p>
 					</div>
 				</div>
 			</div>
-		</div> 
-	<div ng-include="'views/terminal.html'" ng-show="user.group == 'admin'"></div>	
+		</div>
+	</section>
+	<div ng-include="'views/terminal.html'" ng-show="user.group == 'admin'"></div>
 </section>

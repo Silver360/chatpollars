@@ -13,6 +13,20 @@ var session = require('express-session'),
 
 module.exports = {
 
+    avatars: [
+        ['avatar1.jpg', '#b11b1c'],
+        ['avatar2.png', 'black'],
+        ['avatar3.png', '#343434'],
+        ['avatar4.png', '#2EB7FF'],
+        ['avatar5.jpg', 'black'],
+        ['avatar6.jpg', 'black'],
+        ['avatar7.jpg', '#c04438'],
+        ['avatar8.jpg', '#9d0b0e'],
+        ['avatar9.jpg', '#1e2c35'],
+        ['avatar10.jpg', 'black'],
+        ['avatar11.png', '#662c92'],
+        ['avatar12.png', '#2c2c2e']
+    ],
     init: function(app, io){
         return new Promise(function(resolve, reject) {
             mongoose.connection.on("open", function (err) {
@@ -54,10 +68,12 @@ module.exports = {
     },
     saveUser: function(login, password){
         return new Promise(function(resolve, reject){
+            var random = Math.floor((Math.random() * 12) + 1); console.log('Random: ', random);
             var user = new User();
-            user.set('CtrlLogin', login);
+            user.set('login', login);
             user.set('password', password);
             user.set('group', 'user');
+            user.set('avatar', { url: module.exports.avatars[random][0], color: module.exports.avatars[random][1] });
             user.save(function(err){
                 if(err){
                     reject(err);

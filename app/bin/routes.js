@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 module.exports = {
 
     express: require('express'),
+	shortId: require('shortid'),
     userReq: require('./controllers/users_controller.js'),
     msgReq: require('./controllers/messages_controller.js'),
     sessionReq: require('./controllers/session_controller.js'),
@@ -20,37 +21,52 @@ module.exports = {
     findSession: function(req, res, userReq){
         userReq.banAccount.blackList.update().then(function(data){ console.log(data);
             res.send( { session: req.session, Usoccket: data } );
+			console.log('Users IN Chat', this.usersInChat);
+			console.log('users Socket', this.usersSocket);
         }).catch(function(e){
            console.log(e);
         });
     },
     addUser: function(data, io, sessionReq, socket, callback){
-        this.usersInChat[data.login] = data;
-        this.usersSocket[data.login] = socket;
-        sessionReq.createSession(socket.request, data);
+		if(data != 'ren'){
+			console.log('Wypierdalaj!'); 
+			return;
+		}
+		
+		var user = {
+			login: 'Annon#' + module.exports.shortId.generate(),
+			group: 'User'
+		};
+		
+        this.usersInChat[user.login] = user;
+        this.usersSocket[user.login] = socket;
+        sessionReq.createSession(socket.request, user);
         callback( { res: 'access', user: { login: socket.request.session.req.session.user.login, group: socket.request.session.req.session.user.group } } );
-        io.sokets.emit('users:change', Obejct.size(this.usersInChat));
+        io.sockets.emit('users:change', Object.size(this.usersInChat));
     },
     removeUser: function(data, io, sessionReq, socket){
         delete this.usersInChat[data.login];
-        io.sokets.emit('users:change', Obejct.size(this.usersInChat));
-
+        io.sockets.emit('users:change', Object.size(this.usersInChat));
     },
-    login: function(data, io, userReq, sessionReq, socket){
+    login: function(data, io, userReq, sessionReq, socket, callback){
         userReq.login(data.login, data.password).then(function(data){
             sessionReq.createSession(socket.request, data);
             module.exports.usersSocket[data.login] = socket.handshake.address;
-            io.sockets.emit('login:res', { res: 'access', user: { login: socket.request.session.req.session.user.login, group: socket.request.session.req.session.user.group } } );
+            callback( { res: 'access', user: { login: socket.request.session.req.session.user.login, group: socket.request.session.req.session.user.group , avatar: socket.request.session.req.session.user.avatar } } );
+            //io.sockets.emit('login:res', { res: 'access', user: { login: socket.request.session.req.session.user.login, group: socket.request.session.req.session.user.group } } );
         }).catch(function(e){
-            io.sockets.emit('login:res', '' + e);
+            io.sockets.emit('Error', '' + e);
+            callback('' + e);
         });
     },
-    signin: function(data, io, userReq, sessionReq, socket){
+    signin: function(data, io, userReq, sessionReq, socket, callback){
         userReq.signin(data.login, data.password).then(function(data){
             sessionReq.createSession(socket.request, data);
-            io.sockets.emit('login:res', 'access');
+            callback( { res: 'access', user: { login: socket.request.session.req.session.user.login, group: socket.request.session.req.session.user.group , avatar: socket.request.session.req.session.user.avatar } } );
+            //io.sockets.emit('login:res', 'access');
         }).catch(function(e){
-            io.sockets.emit('login:res', '' + e);
+            io.sockets.emit('Error', '' + e);
+            callback('' + e);
         });
     },
     logout: function(req, res, sessionReq){
@@ -62,7 +78,7 @@ module.exports = {
     authentication: function(req, res, sessionReq){
         if (sessionReq.verificationSession(req)) {
             console.log('Wszystko ok [REST]');
-            res.send({ res: 'access:go', user: { login: req.session.user.login, group: req.session.user.group } });
+            res.send({ res: 'access:go', user: { login: req.session.user.login, group: req.session.user.group, avatar: req.session.user.avatar } } );
         } else {
             if(req.body.url == '/prelogin') {
                 console.log('Sesja nie jest aktywna ale mozesz tu byc :) [REST]');
@@ -91,8 +107,9 @@ module.exports = {
         // });
     },
     messages: {
-        getMessages: function(data, io, msgReq){
-            io.sockets.emit('new:messages', msgReq.getMessages());
+        getMessages: function(msgReq, callback){
+            //io.sockets.emit('new:messages', msgReq.getMessages());
+            callback(msgReq.getMessages());
         },
         deleteMessage: function(data, io, msgReq, socket, callback){
             console.log(data);
@@ -149,9 +166,9 @@ module.exports = {
             res.redirect('/#/chat');
         });
 
-        // app.get( '/login', function(req, res){
-        //     res.redirect('/#/login');
-        // });
+         app.get( '/login', function(req, res){
+             res.redirect('/#/login');
+         });
 
         app.get( '/prelogin', function(req, res){
             res.redirect('/#/prelogin');
@@ -166,17 +183,23 @@ module.exports = {
                 io.sockets.emit('done', socket.request.session);
             });
 
-            // socket.on('login', function(data){ console.log('lgowanie');
-            //     module.exports.login(data, io, userReq, sessionReq, socket);
-            // });
+<<<<<<< HEAD
+             socket.on('login', function(data, callback){ console.log('logowanie');
+                 module.exports.login(data, io, userReq, sessionReq, socket, callback);
+             });
+=======
+            socket.on('login', function(data, callback){ console.log('login: ', data); 
+                module.exports.addUser(data, io, sessionReq, socket, callback);
+            });
+>>>>>>> 8b6681eba49a86a35481c72eb548132753b2a00d
 
-            // socket.on('signin', function(data){
-            //     module.exports.signin(data, io, userReq, sessionReq, socket);
-            // });
+             socket.on('signin', function(data, callback){
+                 module.exports.signin(data, io, userReq, sessionReq, socket, callback);
+             });
 
-            socket.on('get:messages', function(data){
+            socket.on('get:messages', function(data, callback){
                 if(sessionReq.verificationSession(socket.request)) {
-                    module.exports.messages.getMessages(data, io, msgReq);
+                    module.exports.messages.getMessages(msgReq, callback);
                 }
             });
 

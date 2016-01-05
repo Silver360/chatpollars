@@ -1,7 +1,7 @@
 
 @keyframes fadeIn {
 	from{
-		transform: scale(0.5);		
+		transform: scale(0.5);
 	}
 	to {
 		transform: scale(1);
@@ -26,7 +26,6 @@
 			height: 150px;
 			color: black;
 			font-family: cursive;
-			font-style: 20px;
 			padding: 10px;
 			max-height: 150px;
 			max-width: 100%;
@@ -37,10 +36,6 @@
 		position: relative;
 		z-index: 1;
 		margin-top: 220px;
-		
-		.animacja.ng-enter{
-			animation: fadeIn 0.2s linear;
-		}
 		
 		.row >div{
 			display: flex;
@@ -66,12 +61,19 @@
 			.right{
 				
 				.content{
-					padding: 70px;
+<<<<<<< HEAD
+					padding: 10px;
 					background-color: #B11B1C;
+=======
+					padding: 70px;
+					background-color: black;
+>>>>>>> 8b6681eba49a86a35481c72eb548132753b2a00d
 					overflow: hidden;
-					border-radius: 30px;
+					border-radius: 10px;
 					display: inline-block;
 					border: solid 5px;
+					animation-name: fadeIn;
+					animation-duration: 0.2s;
 				
 					p{
 						font-family: cursive;

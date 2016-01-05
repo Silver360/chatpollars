@@ -37,7 +37,7 @@ app.directive('validate', function () {
             audio2[0].play();
 
             audio2.bind('ended', function(){
-                audio1[0].play();
+                //audio1[0].play();
             });
 
         });
@@ -60,6 +60,7 @@ app.directive('enterSend', function () {
 				return element;
 			}
 			if(e.which === 13){
+                e.preventDefault();
 				scope.$apply(function (){
 					scope.$eval(attrs.enterSend);
 				});
@@ -82,7 +83,6 @@ app.directive('focus', function () {
 			console.log('focus ^ ^');
 			element.find('input').focus();
 		});
-		
 
     }
 
@@ -92,3 +92,5 @@ app.directive('focus', function () {
     };
 
 });
+
+

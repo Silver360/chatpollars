@@ -6,8 +6,8 @@ app.service('logErrors', ['socketio', '$rootScope', '$state', function( socketio
     var error = {};
 
     socketio.on('Error', function(data){
-            error = data;
-            $rootScope.$broadcast("Error");
+        error = data;
+        $rootScope.$broadcast("Error");
     });
 
     this.getError = function(){

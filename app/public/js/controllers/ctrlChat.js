@@ -11,8 +11,10 @@ app.controller('ctrlChat', ['$scope', '$state', 'ServiceMessages', 'factoryUser'
     };
 
     $scope.sendMessage = function(message){
-        ServiceMessages.sendMessage(message);
-        $scope.message = null;
+        if(message != '' && message != undefined) { console.log('Msg: ', message);
+            ServiceMessages.sendMessage(message);
+            $scope.message = '';
+        }
     };
 
     $scope.$on('new:message', function(){

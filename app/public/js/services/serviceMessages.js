@@ -23,8 +23,11 @@ app.service('ServiceMessages', ['socketio', '$rootScope', function( socketio, $r
         return messages;
     };
 
-    this.getMessages = function() {
-        socketio.emit('get:messages');
+    this.getMessages = function() { console.log('Hello');
+        socketio.emit('get:messages', 'renio', function(data){
+            messages = data;
+            $rootScope.$broadcast("new:message");
+        });
     };
 
     this.deleteMessage = function(user) {
@@ -32,7 +35,7 @@ app.service('ServiceMessages', ['socketio', '$rootScope', function( socketio, $r
         socketio.emit('delete:messages', findKey(messages, user), function(){
 
         });
-    }
+    };
 
     Object.size = function(obj) {
         var size = 0, key;

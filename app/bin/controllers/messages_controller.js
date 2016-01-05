@@ -16,7 +16,9 @@ module.exports = {
                 this.shortId.generate(),
                 req.session.user.login,
                 msg,
-                new Date()
+                new Date(),
+                req.session.user.avatar.url,
+                req.session.user.avatar.color
             ];
 
             this.messages.push(this.msg);
