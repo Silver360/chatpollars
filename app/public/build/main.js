@@ -12,7 +12,13 @@ var myApp = angular.module('dollars', [
             .state('prelogin', {
                 url: '/prelogin',
                 templateUrl: 'views/prelogin.html',
-                controller: 'ctrlPreLogin'
+                controller: 'ctrlPreLogin',
+                resolve: {
+                    authentication: function(factoryAuthentication){
+                        console.log('Zaraz sprawdze i przekieruje z Prelogin');
+                        factoryAuthentication.init('prelogin');
+                    }
+                }
             })
             .state('CtrlLogin', {
                 url: '/login',
@@ -135,22 +141,11 @@ var app = angular.module('dollars');
 
 app.controller('ctrlPreLogin', ['$scope', '$state', 'serviceLogin', function($scope, $state, serviceLogin ) {
 
-<<<<<<< HEAD
-    $scope.testPass = function () {
-
-        $scope.pass = null;
-
-        $scope.enter = function () {
-            serviceLogin.login($scope.pass);
-        }
-    };
-=======
 	$scope.pass = null;
 
 	$scope.enter = function () {
 		serviceLogin.login($scope.pass);
 	};
->>>>>>> 8b6681eba49a86a35481c72eb548132753b2a00d
 
 
 }]);;
@@ -297,7 +292,7 @@ app.factory('factoryAuthentication', ['socketio', '$state', '$location', '$http'
                         console.log('Url: ', $location.url());
                         if(state !== '/login') {
                             console.log('go to login');
-                            $state.go('prelogin');
+                            $state.go('CtrlLogin');
                         }
                     } else if (data.res == 'access:go'){
                         if(state !==  'CtrlChat') {
@@ -355,7 +350,7 @@ app.service('logErrors', ['socketio', '$rootScope', '$state', function( socketio
 var app = angular.module('dollars');
 
 app.factory('socketio', function ($rootScope) {
-    var socket = io.connect('http://pollars.ren.net.pl:4040');
+    var socket = io.connect('http://localhost:4040');
     return {
         on: function (eventName, callback) {
             socket.on(eventName, function () {

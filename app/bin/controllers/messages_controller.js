@@ -10,7 +10,7 @@ module.exports = {
     getMessages: function(){
         return this.messages;
     },
-    createMsg: function(msg, req) {
+    createMsg: function(msg, req) { console.log('User: ', req.session.user);
         if(req.session.user){
             this.msg = [
                 this.shortId.generate(),

@@ -12,7 +12,7 @@ module.exports = {
     },
     createSession: function(req, user){
         console.log('Tworze sesje');
-        req.session.user = user;
+        req.session.user = user; console.log('User in Session: ', user);
         req.session.succes = 'Uwierzytelniono jako ' + user.login;
         req.session.save();
     },

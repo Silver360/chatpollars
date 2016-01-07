@@ -80,7 +80,7 @@ module.exports = {
             console.log('Wszystko ok [REST]');
             res.send({ res: 'access:go', user: { login: req.session.user.login, group: req.session.user.group, avatar: req.session.user.avatar } } );
         } else {
-            if(req.body.url == '/prelogin') {
+            if(req.body.url == '/login') {
                 console.log('Sesja nie jest aktywna ale mozesz tu byc :) [REST]');
             } else {
                 console.log('Jestes w niew��sciwym miejscu [REST]');
@@ -183,15 +183,13 @@ module.exports = {
                 io.sockets.emit('done', socket.request.session);
             });
 
-<<<<<<< HEAD
              socket.on('login', function(data, callback){ console.log('logowanie');
                  module.exports.login(data, io, userReq, sessionReq, socket, callback);
              });
-=======
-            socket.on('login', function(data, callback){ console.log('login: ', data); 
-                module.exports.addUser(data, io, sessionReq, socket, callback);
-            });
->>>>>>> 8b6681eba49a86a35481c72eb548132753b2a00d
+
+            //socket.on('login', function(data, callback){ console.log('login: ', data);
+            //    module.exports.addUser(data, io, sessionReq, socket, callback);
+            //});
 
              socket.on('signin', function(data, callback){
                  module.exports.signin(data, io, userReq, sessionReq, socket, callback);

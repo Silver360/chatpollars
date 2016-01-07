@@ -12,7 +12,13 @@ var myApp = angular.module('dollars', [
             .state('prelogin', {
                 url: '/prelogin',
                 templateUrl: 'views/prelogin.html',
-                controller: 'ctrlPreLogin'
+                controller: 'ctrlPreLogin',
+                resolve: {
+                    authentication: function(factoryAuthentication){
+                        console.log('Zaraz sprawdze i przekieruje z Prelogin');
+                        factoryAuthentication.init('prelogin');
+                    }
+                }
             })
             .state('CtrlLogin', {
                 url: '/login',
