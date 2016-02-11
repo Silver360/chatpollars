@@ -60,7 +60,7 @@ module.exports = {
         });
     },
     signin: function(data, io, userReq, sessionReq, socket, callback){
-        userReq.signin(data.login, data.password).then(function(data){
+        userReq.signin(data.login, data.password).then(function(data){ console.log('rejestracja: ', data );
             sessionReq.createSession(socket.request, data);
             callback( { res: 'access', user: { login: socket.request.session.req.session.user.login, group: socket.request.session.req.session.user.group , avatar: socket.request.session.req.session.user.avatar } } );
             //io.sockets.emit('login:res', 'access');
@@ -80,7 +80,7 @@ module.exports = {
             console.log('Wszystko ok [REST]');
             res.send({ res: 'access:go', user: { login: req.session.user.login, group: req.session.user.group, avatar: req.session.user.avatar } } );
         } else {
-            if(req.body.url == '/login') {
+            if(req.body.url == '/login' || req.body.url == '/prelogin') {
                 console.log('Sesja nie jest aktywna ale mozesz tu byc :) [REST]');
             } else {
                 console.log('Jestes w niew��sciwym miejscu [REST]');
@@ -187,9 +187,13 @@ module.exports = {
                  module.exports.login(data, io, userReq, sessionReq, socket, callback);
              });
 
-            //socket.on('login', function(data, callback){ console.log('login: ', data);
-            //    module.exports.addUser(data, io, sessionReq, socket, callback);
-            //});
+            socket.on('prelogin', function(data, callback){ console.log('prelogin: ', data);
+                if(data === "renifer"){
+                    callback('pass:ok');
+                } else {
+                    callback('pass:failed');
+                }
+            });
 
              socket.on('signin', function(data, callback){
                  module.exports.signin(data, io, userReq, sessionReq, socket, callback);

@@ -35,4 +35,16 @@ app.service('serviceLogin', ['socketio', '$rootScope', '$state', 'factoryUser', 
         });
     };
 
+    this.prelogin = function(pass){
+        socketio.emit('prelogin', pass, function(data){ console.log('data: ', data);
+            if(data == 'pass:ok'){
+                $state.go('CtrlLogin');
+            }
+            else {
+                error = data;
+                $rootScope.$broadcast("login:erorr");
+            }
+        });
+    }
+
 }]);

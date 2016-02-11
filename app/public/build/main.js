@@ -144,7 +144,7 @@ app.controller('ctrlPreLogin', ['$scope', '$state', 'serviceLogin', function($sc
 	$scope.pass = null;
 
 	$scope.enter = function () {
-		serviceLogin.login($scope.pass);
+		serviceLogin.prelogin($scope.pass);
 	};
 
 
@@ -292,7 +292,7 @@ app.factory('factoryAuthentication', ['socketio', '$state', '$location', '$http'
                         console.log('Url: ', $location.url());
                         if(state !== '/login') {
                             console.log('go to login');
-                            $state.go('CtrlLogin');
+                            $state.go('prelogin');
                         }
                     } else if (data.res == 'access:go'){
                         if(state !==  'CtrlChat') {
@@ -350,7 +350,7 @@ app.service('logErrors', ['socketio', '$rootScope', '$state', function( socketio
 var app = angular.module('dollars');
 
 app.factory('socketio', function ($rootScope) {
-    var socket = io.connect('http://localhost:4040');
+    var socket = io.connect('http://pollars.ren.net.pl:4040');
     return {
         on: function (eventName, callback) {
             socket.on(eventName, function () {
@@ -429,6 +429,18 @@ app.service('serviceLogin', ['socketio', '$rootScope', '$state', 'factoryUser', 
             }
         });
     };
+
+    this.prelogin = function(pass){
+        socketio.emit('prelogin', pass, function(data){ console.log('data: ', data);
+            if(data == 'pass:ok'){
+                $state.go('CtrlLogin');
+            }
+            else {
+                error = data;
+                $rootScope.$broadcast("login:erorr");
+            }
+        });
+    }
 
 }]);
 ;

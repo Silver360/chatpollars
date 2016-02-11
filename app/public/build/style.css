@@ -5910,14 +5910,15 @@ section#prelogin {
     #chat > section .row > div .right .content {
       padding: 10px;
       background-color: #B11B1C;
-      padding: 70px;
+      padding: 20px;
       background-color: black;
       overflow: hidden;
       border-radius: 10px;
       display: inline-block;
-      border: solid 5px;
+      border: solid 2px;
       animation-name: fadeIn;
-      animation-duration: 0.2s; }
+      animation-duration: 0.2s;
+      word-break: break-all; }
       #chat > section .row > div .right .content p {
         font-family: cursive;
         font-size: 20px;

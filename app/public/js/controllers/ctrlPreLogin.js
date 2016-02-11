@@ -6,7 +6,7 @@ app.controller('ctrlPreLogin', ['$scope', '$state', 'serviceLogin', function($sc
 	$scope.pass = null;
 
 	$scope.enter = function () {
-		serviceLogin.login($scope.pass);
+		serviceLogin.prelogin($scope.pass);
 	};
 
 

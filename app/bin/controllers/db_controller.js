@@ -14,18 +14,19 @@ var session = require('express-session'),
 module.exports = {
 
     avatars: [
-        ['avatar1.jpg', '#b11b1c'],
+        ['avatar0.jpg', '#b11b1c'],
+        ['avatar1.jpg', '#FA9736'],
         ['avatar2.png', 'black'],
         ['avatar3.png', '#343434'],
         ['avatar4.png', '#2EB7FF'],
         ['avatar5.jpg', 'black'],
-        ['avatar6.jpg', 'black'],
-        ['avatar7.jpg', '#c04438'],
-        ['avatar8.jpg', '#9d0b0e'],
-        ['avatar9.jpg', '#1e2c35'],
-        ['avatar10.jpg', 'black'],
-        ['avatar11.png', '#662c92'],
-        ['avatar12.png', '#2c2c2e']
+        ['avatar6.png', 'black'],
+        ['avatar7.png', '#2C2C2E'],
+        ['avatar8.jpg', '#B189BE'],
+        ['avatar9.jpg', '#9C0B0E'],
+        ['avatar10.jpg', '#231F20'],
+        ['avatar11.jpg', '#BF4438'],
+        ['avatar12.jpg', '#FDBC3B'],
     ],
     init: function(app, io){
         return new Promise(function(resolve, reject) {
@@ -78,7 +79,7 @@ module.exports = {
                 if(err){
                     reject(err);
                 } else {
-                    resolve('U�ytkownik zosta� dodany do bazy');
+                    resolve(user);
                 }
             });
         });

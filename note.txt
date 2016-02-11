@@ -22,3 +22,7 @@ socket.boradcast.emit('new message', data);
 
 coll.remove({})
 
+
+//Aktualizacja bazy danej
+{ login: "Ren" },{    $set: {        avatar: { url: "avatar0.jpg", color: "#b11b1c" }    },    $currentDate: { lastModified: true }}
+

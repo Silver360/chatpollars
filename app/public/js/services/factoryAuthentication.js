@@ -13,7 +13,7 @@ app.factory('factoryAuthentication', ['socketio', '$state', '$location', '$http'
                         console.log('Url: ', $location.url());
                         if(state !== '/login') {
                             console.log('go to login');
-                            $state.go('CtrlLogin');
+                            $state.go('prelogin');
                         }
                     } else if (data.res == 'access:go'){
                         if(state !==  'CtrlChat') {
